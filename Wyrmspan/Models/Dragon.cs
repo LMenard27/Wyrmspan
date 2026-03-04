@@ -15,4 +15,18 @@ class Dragon {
     bool topPlacable;
     bool midPlacable;
     bool bottomPlacable;
+
+    /*
+    Getter for action
+    */
+    public WyrmAction getAction() {
+        return this.action;
+    }
+
+    /*
+    Getter for egg capacity
+    */
+    public int getEggCapacity() {
+        return this.eggCapacity;
+    }
 }
