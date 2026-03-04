@@ -12,6 +12,16 @@ class Cavern {
     WyrmAction capstoneReward;
     int totEggCapacity;
 
+    public Cavern(WyrmAction capstone) {
+        this.exploreCount = 0;
+        this.caves = new Cave[CAVES_PER_CAVERN];
+        this.caveIndex = 1;
+        this.dragons = new Dragon[CAVES_PER_CAVERN];
+        this.dragonIndex = 0;
+        this.capstoneReward = capstone;
+        this.totEggCapacity = 0;
+    }
+
     /*
     Adds a Cave to this Cavern. Returns the WyrmAction of the Cave, and the capstone WyrmAction of this Cavern, if applicable.
     Assumes validation is done by the caller.
