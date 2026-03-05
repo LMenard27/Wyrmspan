@@ -8,10 +8,22 @@ class GameBoard {
     Cave[] caveShop;
     Stack<Dragon> dragonDeck;
     Stack<Cave> caveDeck;
-    Action[] guildCycleRewards;
+    Resources[] guildCycleRewards;
     Stack<Dragon> dragonDiscard;
     Stack<Cave> caveDiscard;
     
+    public GameBoard() {
+        this.dragonShop = new Dragon[SHOP_SIZE];
+        this.caveShop = new Cave[SHOP_SIZE];
+        this.dragonDeck = new Stack<Dragon>();
+        this.caveDeck = new Stack<Cave>();
+
+        //TODO: Update this
+        this.guildCycleRewards = [Resources.Meat];
+
+        this.dragonDiscard = new Stack<Dragon>();
+        this.caveDiscard = new Stack<Cave>();
+    }
     
     /*
     Refreshes the shop by moving all cards from both shops to their respective discards, clearing both shops,
@@ -38,7 +50,10 @@ class GameBoard {
     }
 
     /*
-    Removes and returns the top Dragon in the Dragon deck
+    Removes and returns the top Dragon in the Dragon deck.
+
+    Return:
+    the Dragon that was drawn.
     */
     public Dragon drawDragon() {
         return this.dragonDeck.Pop();
@@ -46,6 +61,9 @@ class GameBoard {
 
     /*
     Removes and returns the top Cave in the Cave deck
+
+    Return:
+    the Cave that was drawn.
     */
     public Cave drawCave() {
         return this.caveDeck.Pop();
@@ -67,8 +85,12 @@ class GameBoard {
 
     /*
     Returns the Dragon at position i in the Dragon shop, then removes and replaces that slot. Assumes validation is done by the caller.
+
     Parameters:
     i: the shop index from which to grab the Dragon.
+
+    Return:
+    the Dragon at index i.
     */
     public Dragon pickDragonFromShop(int i) {
         Dragon output = this.dragonShop[i];
@@ -78,8 +100,12 @@ class GameBoard {
 
     /*
     Returns the Cave at position i in the Cave shop, then removes and replaces that slot. Assumes validation is done by the caller.
+
     Parameters:
     i: the shop index from which to grab the Cave.
+
+    Return:
+    the Cave at index i.
     */
     public Cave pickCaveFromShop(int i) {
         Cave output = this.caveShop[i];

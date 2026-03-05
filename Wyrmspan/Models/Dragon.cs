@@ -1,4 +1,4 @@
-class Dragon {
+class Dragon: IComparable<Dragon> {
     int id;
     String name;
     String sprite;
@@ -28,5 +28,114 @@ class Dragon {
     */
     public int getEggCapacity() {
         return this.eggCapacity;
+    }
+
+    /*
+    Getter for name
+    */
+    public String getName() {
+        return this.name;
+    }
+
+    /*
+    Getter for sprite
+    */
+    public String getSprite() {
+        return this.sprite;
+    }
+
+    /*
+    Getter for coinCost
+    */
+    public int getCoinCost() {
+        return this.coinCost;
+    }
+
+    /*
+    Getter for meatCost
+    */
+    public int getMeatCost() {
+        return this.meatCost;
+    }
+
+    /*
+    Getter for goldCost
+    */
+    public int getGoldCost() {
+        return this.goldCost;
+    }
+
+    /*
+    Getter for amethystCost
+    */
+    public int getAmethystCost() {
+        return this.amethystCost;
+    }
+
+    /*
+    Getter for milkCost
+    */
+    public int getMilkCost() {
+        return this.milkCost;
+    }
+
+    /*
+    Getter for size
+    */
+    public int getSize() {
+        return this.size;
+    }
+
+    /*
+    Getter for VP
+    */
+    public int getVP() {
+        return this.victoryPoints;
+    }
+
+    /*
+    Getter for nature
+    */
+    public int getNature() {
+        return this.nature;
+    }
+
+    /*
+    Getter for topPlacable
+    */
+    public bool getTopPlacable() {
+        return this.topPlacable;
+    }
+
+    /*
+    Getter for midPlacable
+    */
+    public bool getMidPlacable() {
+        return this.midPlacable;
+    }
+
+    /*
+    Getter for bottomPlacable
+    */
+    public bool getBottomPlacable() {
+        return this.bottomPlacable;
+    }
+
+    /*
+    Getter for id
+    */
+    public int getId() {
+        return this.id;
+    }
+
+    /*
+    Custom comparer
+    */
+    public int CompareTo(Dragon? other) {
+        if (other == null) {
+            return 0;
+        } else {
+            return this.id - other.id;
+        }
     }
 }

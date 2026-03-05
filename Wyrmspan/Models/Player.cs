@@ -1,7 +1,130 @@
+using System.Collections;
+
 class Player {
     String name;
     Mat mat;
-    Dragon[] dragonHand;
-    Cave[] caveHand;
-    Dictionary<Resources, int> Resources;
+    List<Dragon> dragonHand;
+    List<Cave> caveHand;
+    Dictionary<Resources, int> resources;
+
+    public Player(String name) {
+        this.name = name;
+        this.dragonHand = new List<Dragon>();
+        this.caveHand = new List<Cave>();
+        this.resources = new Dictionary<Resources, int>();
+        resources.Add(Resources.Coins, 0);
+        resources.Add(Resources.Meat, 0);
+        resources.Add(Resources.Amethyst, 0);
+        resources.Add(Resources.Gold, 0);
+        resources.Add(Resources.Milk, 0);
+        resources.Add(Resources.Eggs, 0);
+        resources.Add(Resources.Reputation, 0);
+
+        this.mat = new Mat([WyrmAction.nothingAction(), WyrmAction.nothingAction(), WyrmAction.nothingAction()]);
+    }
+
+    /*
+    Getter for name
+    */
+    public String getName() {
+        return this.name;
+    }
+
+    /*
+    Getter for mat
+    */
+    public Mat getMaat() {
+        return this.mat;
+    }
+
+    /*
+    Getter for mat
+    */
+    public Mat getMat() {
+        return this.mat;
+    }
+
+    /*
+    Getter for dragon hand
+    */
+    public List<Dragon> getDragonHand() {
+        return this.dragonHand;
+    }
+
+    /*
+    Getter for cave hand
+    */
+    public List<Cave> getCaveHand() {
+        return this.caveHand;
+    }
+
+    /*
+    Getter for resources
+    */
+    public Dictionary<Resources, int> getResources() {
+        return this.resources;
+    }
+
+    /*
+    Setter for resources, one resource at a time
+    */
+    public void setResource(Resources r, int count) {
+        this.resources[r] = count;
+    }
+
+    /*
+    Increments the value of a resource, one resource at a time
+    */
+    public void addResource(Resources r, int count) {
+        this.resources[r] += count;
+    }
+
+    /*
+    Calls the explore function of a specified cavern and passes on its return
+    */
+    public WyrmAction[] explore(int c) {
+        return this.mat.explore(c);
+    }
+
+    /*
+    Calls the addDragon function of a specified cavern and passes on its return
+    */
+    public WyrmAction[] addDragon(int c, Dragon d) {
+        return this.mat.addDragon(c, d);
+    }
+
+    /*
+    Calls the addCave function of a specified cavern and passes on its return
+    */
+    public WyrmAction[] addCave(int c, Cave cv) {
+        return this.mat.addCave(c, cv);
+    }
+
+    /*
+    Removes a specific dragon by id
+    */
+    public void discardDragon(int id) {
+        this.dragonHand.RemoveAll(x => x.getId() == id);
+    }
+
+    /*
+    Removes a specific cave by id
+    */
+    public void discardHand(int id) {
+        this.caveHand.RemoveAll(x => x.getId() == id);
+    }
+
+    /*
+    Adds a dragon to the hand
+    */
+    public void addDragonToHand(Dragon d) {
+        this.dragonHand.Add(d);
+    }
+
+    /*
+    Adds a cave to the hand
+    */
+    public void addCaveToHand(Cave c) {
+        this.caveHand.Add(c);
+    }
 }
