@@ -3,7 +3,8 @@ class GuildReward {
     int uses;
     WyrmAction action;
 
-    public GuildReward(int uses, WyrmAction action) {
+    public GuildReward(int id, int uses, WyrmAction action) {
+        this.id = id;
         this.uses = uses;
         this.action = action;
     }

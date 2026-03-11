@@ -16,6 +16,25 @@ class Dragon: IComparable<Dragon> {
     bool midPlacable;
     bool bottomPlacable;
 
+    public Dragon(int id, String name, String sprite, int coinCost, int meatCost, int goldCost, int amethystCost, int milkCost, int eggCapacity, int size, int victoryPoints, int nature, WyrmAction action, bool topPlacable, bool midPlacable, bool bottomPlacable) {
+        this.id = id;
+        this.name = name;
+        this.sprite = sprite;
+        this.coinCost = coinCost;
+        this.meatCost = meatCost;
+        this.goldCost = goldCost;
+        this.amethystCost = amethystCost;
+        this.milkCost = milkCost;
+        this.eggCapacity = eggCapacity;
+        this.size = size;
+        this.victoryPoints = victoryPoints;
+        this.nature = nature;
+        this.action = action;
+        this.topPlacable = topPlacable;
+        this.midPlacable = midPlacable;
+        this.bottomPlacable = bottomPlacable;
+    }
+
     /*
     Getter for action
     */

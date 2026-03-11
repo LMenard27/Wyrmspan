@@ -1,6 +1,10 @@
 using System.Collections;
 
 class Player {
+    // CONSTANTS
+    const int STARTING_COINS = 6;
+    
+    // NON-CONSTANTS
     String name;
     Mat mat;
     List<Dragon> dragonHand;
@@ -12,7 +16,7 @@ class Player {
         this.dragonHand = new List<Dragon>();
         this.caveHand = new List<Cave>();
         this.resources = new Dictionary<Resources, int>();
-        resources.Add(Resources.Coins, 0);
+        resources.Add(Resources.Coins, STARTING_COINS);
         resources.Add(Resources.Meat, 0);
         resources.Add(Resources.Amethyst, 0);
         resources.Add(Resources.Gold, 0);
@@ -28,13 +32,6 @@ class Player {
     */
     public String getName() {
         return this.name;
-    }
-
-    /*
-    Getter for mat
-    */
-    public Mat getMaat() {
-        return this.mat;
     }
 
     /*
@@ -110,7 +107,7 @@ class Player {
     /*
     Removes a specific cave by id
     */
-    public void discardHand(int id) {
+    public void discardCave(int id) {
         this.caveHand.RemoveAll(x => x.getId() == id);
     }
 

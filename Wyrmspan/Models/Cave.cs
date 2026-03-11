@@ -2,6 +2,11 @@ class Cave: IComparable<Cave> {
     int id;
     WyrmAction action;
 
+    public Cave(int id, WyrmAction action) {
+        this.id = id;
+        this.action = action;
+    }
+
     public int CompareTo(Cave? other) {
         if (other == null) {
             return 0;

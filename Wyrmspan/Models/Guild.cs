@@ -7,7 +7,9 @@ class Guild{
     GuildReward reward4;
     int color;
 
-    public Guild(GuildReward r1, GuildReward r2, GuildReward r3, GuildReward r4, int color)  {
+    public Guild(int id, String name, GuildReward r1, GuildReward r2, GuildReward r3, GuildReward r4, int color)  {
+        this.id = id;
+        this.name = name;
         this.reward1 = r1;
         this.reward2 = r2;
         this.reward3 = r3;
