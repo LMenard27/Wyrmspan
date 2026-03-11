@@ -126,4 +126,18 @@ class GameBoard {
     public Cave[] peekCaveShop() {
         return this.caveShop;
     }
+
+    /*
+    Peeker for the Dragon deck
+    */
+    public Dragon peekDragonDeck() {
+        return this.dragonDeck.Peek();
+    }
+
+    /*
+    Peeker for the Cave deck
+    */
+    public Cave peekCaveDeck() {
+        return this.caveDeck.Peek();
+    }
 }

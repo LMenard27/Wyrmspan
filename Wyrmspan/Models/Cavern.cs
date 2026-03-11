@@ -1,7 +1,7 @@
 class Cavern {
     // Constants
-    const int CAVES_PER_CAVERN = 4;
-    const int MAX_EXPLORE_COUNT = 3;
+    public static int CAVES_PER_CAVERN = 4;
+    public static int MAX_EXPLORE_COUNT = 3;
 
     // Non-Constants
     int exploreCount;

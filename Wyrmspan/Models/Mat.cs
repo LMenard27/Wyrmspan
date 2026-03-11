@@ -17,7 +17,7 @@ class Mat {
     /*
     Getter for caverns
     */
-    public Cavern[] GetCaverns() {
+    public Cavern[] getCaverns() {
         return this.caverns;
     }
 
