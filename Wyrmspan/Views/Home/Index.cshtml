@@ -1,8 +1,28 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Test Page";
 }
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+
+
+    <button id="helloBtn">Call HelloWorld</button>
+
+    <script>
+        document.getElementById("helloBtn").addEventListener("click", function () {
+            fetch("http://localhost:5012/HelloWorld", {
+                method: "GET"
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    </script>
+
+
 </div>
