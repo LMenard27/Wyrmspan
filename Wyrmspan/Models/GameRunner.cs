@@ -442,4 +442,12 @@ class GameRunner {
         
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
+
+    /*
+    Handle the end of game
+    */
+    private void handleGameEnd() {
+        // TODO: this
+        // calculate points, update stack, make something to tell frontend to end the game
+    }
 }
