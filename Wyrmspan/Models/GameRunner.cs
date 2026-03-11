@@ -287,7 +287,7 @@ class GameRunner {
     }
 
     /*
-    Called when a player excavates a cave
+    Called when a player excavates a cave TODO: add egg cost
     */
     public ApiResponse apiPlayerExcavates(int p, Cave c, int cavern) {
         // Check legality of move
@@ -313,6 +313,7 @@ class GameRunner {
         }
 
         // All is good, pay cost, excavate new cave and store actions
+        // TODO: remove from hand
         this.players[p].addResource(Resources.Coins, -1);
         WyrmAction[] todoList = this.players[p].getMat().getCaverns()[cavern].addCave(c);
         foreach (WyrmAction w in todoList) {
@@ -406,6 +407,9 @@ class GameRunner {
 
     /*
     Called when a player entices a dragon
+    TODO: remove dragon from hand
+    TODO: remove resources from hand
+    TODO: verify resources exist
     */
     public ApiResponse apiPlayerEntices(int p, Dragon d, int cavern) {
         // Check legality of move
