@@ -1,17 +1,101 @@
 ﻿@{
-    ViewData["Title"] = "Test Page";
+    ViewData["Title"] = "Wyrmspan R1 Demo";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Wyrmspan R1 Demo</h1>
+    <!-- <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p> -->
 
 
-    <button id="helloBtn">Call HelloWorld</button>
+    <button id="initBtn">Initialize Game Board</button>
+    <button id="setupBtn">Simulate Player Setup</button>
+    <button id="p1d">Player 1 plays a dragon</button>
+    <button id="p1c">Player 1 chooses a coin</button>
+    <button id="p1m">Bad Actor P1 chooses meat</button>
+    <button id="p1db">Malformed Request: Nonexistent Cavern (P1)</button>
+    <button id="p2e">Player 2 explores a cavern</button>
 
     <script>
-        document.getElementById("helloBtn").addEventListener("click", function () {
-            fetch("http://localhost:5012/HelloWorld", {
+        document.getElementById("initBtn").addEventListener("click", function () {
+            fetch("http://localhost:5012/Demo/Initialize", {
+                method: "GET"
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+
+        document.getElementById("setupBtn").addEventListener("click", function () {
+            fetch("http://localhost:5012/Demo/PlayerSetup", {
+                method: "GET"
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+
+        document.getElementById("p1d").addEventListener("click", function () {
+            fetch("http://localhost:5012/Demo/P1Dragon", {
+                method: "GET"
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+
+        document.getElementById("p1db").addEventListener("click", function () {
+            fetch("http://localhost:5012/Demo/P1DragonBad", {
+                method: "GET"
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+
+        document.getElementById("p2e").addEventListener("click", function () {
+            fetch("http://localhost:5012/Demo/P2Explore", {
+                method: "GET"
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+
+        document.getElementById("p1c").addEventListener("click", function () {
+            fetch("http://localhost:5012/Demo/P1Coin", {
+                method: "GET"
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+
+        document.getElementById("p1m").addEventListener("click", function () {
+            fetch("http://localhost:5012/Demo/P1CoinBad", {
                 method: "GET"
             })
             .then(response => response.text())
