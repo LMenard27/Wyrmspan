@@ -8,6 +8,13 @@ class StackFrame {
         this.state = States.NOP;
         this.player = -1;
         this.resourcesAllowed = new Dictionary<Resources, bool>();
+        this.resourcesAllowed[Resources.Coins] = false;
+        this.resourcesAllowed[Resources.Meat] = false;
+        this.resourcesAllowed[Resources.Gold] = false;
+        this.resourcesAllowed[Resources.Amethyst] = false;
+        this.resourcesAllowed[Resources.Milk] = false;
+        this.resourcesAllowed[Resources.Eggs] = false;
+        this.resourcesAllowed[Resources.Reputation] = false;
         this.description = "No Description";
     }
 
@@ -15,6 +22,13 @@ class StackFrame {
         this.state = s;
         this.player = -1;
         this.resourcesAllowed = new Dictionary<Resources, bool>();
+        this.resourcesAllowed[Resources.Coins] = false;
+        this.resourcesAllowed[Resources.Meat] = false;
+        this.resourcesAllowed[Resources.Gold] = false;
+        this.resourcesAllowed[Resources.Amethyst] = false;
+        this.resourcesAllowed[Resources.Milk] = false;
+        this.resourcesAllowed[Resources.Eggs] = false;
+        this.resourcesAllowed[Resources.Reputation] = false;
         this.description = "No Description";
     }
 
@@ -22,6 +36,13 @@ class StackFrame {
         this.state = s;
         this.player = p;
         this.resourcesAllowed = new Dictionary<Resources, bool>();
+        this.resourcesAllowed[Resources.Coins] = false;
+        this.resourcesAllowed[Resources.Meat] = false;
+        this.resourcesAllowed[Resources.Gold] = false;
+        this.resourcesAllowed[Resources.Amethyst] = false;
+        this.resourcesAllowed[Resources.Milk] = false;
+        this.resourcesAllowed[Resources.Eggs] = false;
+        this.resourcesAllowed[Resources.Reputation] = false;
         this.description = "No Description";
     }
 
@@ -29,6 +50,13 @@ class StackFrame {
         this.state = s;
         this.player = p;
         this.resourcesAllowed = new Dictionary<Resources, bool>();
+        this.resourcesAllowed[Resources.Coins] = false;
+        this.resourcesAllowed[Resources.Meat] = false;
+        this.resourcesAllowed[Resources.Gold] = false;
+        this.resourcesAllowed[Resources.Amethyst] = false;
+        this.resourcesAllowed[Resources.Milk] = false;
+        this.resourcesAllowed[Resources.Eggs] = false;
+        this.resourcesAllowed[Resources.Reputation] = false;
         this.description = desc;
     }
 

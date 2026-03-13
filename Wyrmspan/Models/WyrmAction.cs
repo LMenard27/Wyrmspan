@@ -10,6 +10,7 @@ class WyrmAction {
     String description;
 
     static WyrmAction NOTHING_ACTION = new WyrmAction(-1, 0, 0, 0, 0, 0, false, false, "Do-Nothing action");
+    public static WyrmAction DEMO_ACTION = new WyrmAction(17, 0, 0, 0, 0, 0, false, false, "Do-Nothing action");
 
     public static WyrmAction nothingAction() {
         return NOTHING_ACTION;
@@ -123,5 +124,12 @@ class WyrmAction {
     */
     public bool getGainChoice() {
         return this.gainChoice;
+    }
+
+    /*
+    Getter for id
+    */
+    public int getId() {
+        return this.id;
     }
 }

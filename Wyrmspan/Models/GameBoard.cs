@@ -23,6 +23,41 @@ class GameBoard {
 
         this.dragonDiscard = new Stack<Dragon>();
         this.caveDiscard = new Stack<Cave>();
+
+        //TODO: Make this draw from the database
+        this.dragonDeck.Push(new Dragon("Ancient One"));
+        this.dragonDeck.Push(new Dragon("Spry Horned Lung Dragon"));
+        this.dragonDeck.Push(new Dragon("Flocking Dragonette"));
+        this.dragonDeck.Push(new Dragon("Spotted Licheneater"));
+        this.dragonDeck.Push(new Dragon("Swift Lung Dragon"));
+        this.dragonDeck.Push(new Dragon("Aged Sea Serpent"));
+        this.dragonDeck.Push(new Dragon("Primeval Wyrm"));
+        this.dragonDeck.Push(new Dragon("Primordiasaur"));
+        this.dragonDeck.Push(new Dragon("Carboniferous Rockbreaker"));
+        this.dragonDeck.Push(new Dragon("Spirited Hydraptere"));
+        this.dragonDeck.Push(new Dragon("Quartzy Rockbreaker"));
+        this.dragonDeck.Push(new Dragon("Sossusvlei Wyvern"));
+        this.dragonDeck.Push(new Dragon("Lavender Feydragon"));
+        this.dragonDeck.Push(new Dragon("Crafty Moray"));
+        this.dragonDeck.Push(new Dragon("Great Horned Wyvern"));
+        this.dragonDeck.Push(new Dragon("Wily Lindworm"));
+        this.dragonDeck.Push(new Dragon("White-Bellied Grazer"));
+        this.dragonDeck.Push(new Dragon("Leafeating Cricketcatcher"));
+        this.dragonDeck.Push(new Dragon("Melodious Firedragon"));
+        this.dragonDeck.Push(new Dragon("Peregrine Firedragon"));
+        this.dragonDeck.Push(new Dragon("Common Grass Lindworm"));
+        this.dragonDeck.Push(new Dragon("Keening Amphiptere"));
+        this.dragonDeck.Push(new Dragon("Bargaining Grazer"));
+        this.dragonDeck.Push(new Dragon("Singeing Remora"));
+        this.dragonDeck.Push(new Dragon("Cackling Dragonette"));
+        this.dragonDeck.Push(new Dragon(17, "Fanged Feydragon", "", 0, 2, 0, 0, 0, 2, 2, 3, 1, WyrmAction.DEMO_ACTION, true, false, false));
+        this.dragonDeck.Push(new Dragon("Wise Anteldragon"));
+        this.dragonDeck.Push(new Dragon("Caustic Wyrm"));
+        this.dragonDeck.Push(new Dragon("Descending Firevern"));
+
+        for (int i = 0; i < 100; i++) {
+            this.caveDeck.Push(new Cave());
+        }
     }
     
     /*
@@ -56,7 +91,11 @@ class GameBoard {
     the Dragon that was drawn.
     */
     public Dragon drawDragon() {
-        return this.dragonDeck.Pop();
+        try {
+            return this.dragonDeck.Pop();
+        } catch (Exception e) {
+            return new Dragon();
+        }
     }
 
     /*
@@ -66,7 +105,11 @@ class GameBoard {
     the Cave that was drawn.
     */
     public Cave drawCave() {
-        return this.caveDeck.Pop();
+        try {
+            return this.caveDeck.Pop();
+        } catch (Exception e) {
+            return new Cave();
+        }
     }
 
     /*

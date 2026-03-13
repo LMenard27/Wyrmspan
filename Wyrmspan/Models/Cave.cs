@@ -7,6 +7,11 @@ class Cave: IComparable<Cave> {
         this.action = action;
     }
 
+    public Cave() {
+        this.id = -1;
+        this.action = WyrmAction.nothingAction();
+    }
+
     public int CompareTo(Cave? other) {
         if (other == null) {
             return 0;

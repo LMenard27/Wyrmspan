@@ -35,6 +35,82 @@ class Dragon: IComparable<Dragon> {
         this.bottomPlacable = bottomPlacable;
     }
 
+    public Dragon() {
+        this.id = -1;
+        this.name = "Example Dragon";
+        this.sprite = "sprite link here";
+        this.coinCost = 0;
+        this.meatCost = 1;
+        this.goldCost = 1;
+        this.amethystCost = 0;
+        this.milkCost = 0;
+        this.eggCapacity = 0;
+        this.size = 2;
+        this.victoryPoints = 3;
+        this.nature = 1;
+        this.action = WyrmAction.nothingAction();
+        this.topPlacable = true;
+        this.midPlacable = true;
+        this.bottomPlacable = true;
+    }
+
+    public Dragon(int id) {
+        this.id = id;
+        this.name = "Example Dragon";
+        this.sprite = "sprite link here";
+        this.coinCost = 0;
+        this.meatCost = 1;
+        this.goldCost = 1;
+        this.amethystCost = 0;
+        this.milkCost = 0;
+        this.eggCapacity = 0;
+        this.size = 2;
+        this.victoryPoints = 3;
+        this.nature = 1;
+        this.action = WyrmAction.nothingAction();
+        this.topPlacable = true;
+        this.midPlacable = true;
+        this.bottomPlacable = true;
+    }
+
+    public Dragon(string name) {
+        this.id = -1;
+        this.name = name;
+        this.sprite = "sprite link here";
+        this.coinCost = 0;
+        this.meatCost = 1;
+        this.goldCost = 1;
+        this.amethystCost = 0;
+        this.milkCost = 0;
+        this.eggCapacity = 0;
+        this.size = 2;
+        this.victoryPoints = 3;
+        this.nature = 1;
+        this.action = WyrmAction.nothingAction();
+        this.topPlacable = true;
+        this.midPlacable = true;
+        this.bottomPlacable = true;
+    }
+
+    public Dragon(int id, string name) {
+        this.id = id;
+        this.name = name;
+        this.sprite = "sprite link here";
+        this.coinCost = 0;
+        this.meatCost = 1;
+        this.goldCost = 1;
+        this.amethystCost = 0;
+        this.milkCost = 0;
+        this.eggCapacity = 0;
+        this.size = 2;
+        this.victoryPoints = 3;
+        this.nature = 1;
+        this.action = WyrmAction.nothingAction();
+        this.topPlacable = true;
+        this.midPlacable = true;
+        this.bottomPlacable = true;
+    }
+
     /*
     Getter for action
     */

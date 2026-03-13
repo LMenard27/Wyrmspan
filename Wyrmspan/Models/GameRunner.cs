@@ -1,4 +1,6 @@
 class GameRunner {
+    // STATICS
+    public static GameRunner mainBoard = new GameRunner();
     // CONSTANTS
     const int NUM_PLAYERS = 4;
     const int STARTING_CARDS = 3;
@@ -63,8 +65,16 @@ class GameRunner {
             }
 
             // add choose resource await in reverse order so player 0 goes first
-            this.gameStack.Push(new StackFrame(States.AWAIT_GET_RESOURCE, NUM_PLAYERS - i - 1));
+            StackFrame frame = new StackFrame(States.AWAIT_GET_RESOURCE, NUM_PLAYERS - i - 1);
+            frame.setAllowedResource(Resources.Meat, true);
+            frame.setAllowedResource(Resources.Gold, true);
+            frame.setAllowedResource(Resources.Amethyst, true);
+            frame.setAllowedResource(Resources.Milk, true);
+            this.gameStack.Push(frame);
+            this.gameStack.Push(frame);
         }
+
+        //TODO: add stack frames for discarding down to 3
 
         this.currState = this.gameStack.Peek().getState();
         this.statePlayer = this.gameStack.Peek().getPlayer();
@@ -96,13 +106,13 @@ class GameRunner {
     public ApiResponse apiPlayerChooseResourceToGain(int p, Resources r) {
         // Check legality of move
         if (p != this.statePlayer) {
-            throw new IllegalMoveException("It is not your turn!");
+            throw new IllegalMoveException($"It is not your turn! (got {p}, expected {this.statePlayer})");
         }
         if (this.currState != States.AWAIT_GET_RESOURCE) {
             throw new IllegalMoveException("Now is not the time to do that!");
         }
         if (!this.gameStack.Peek().getAllowedResources()[r]) {
-            throw new IllegalMoveException("You are not allowed to choose that resource!");
+            throw new IllegalMoveException($"You are not allowed to choose that resource! ({r})");
         }
 
         // All is good, add a resource to player
@@ -292,7 +302,7 @@ class GameRunner {
     public ApiResponse apiPlayerExcavates(int p, Cave c, int cavern) {
         // Check legality of move
         if (p != this.statePlayer) {
-            throw new IllegalMoveException("It is not your turn!");
+            throw new IllegalMoveException($"It is not your turn! (got {p}, expected {this.statePlayer})");
         }
         if (this.currState != States.AWAIT_PLAYER_ACTION) {
             throw new IllegalMoveException("Now is not the time to do that!");
@@ -345,6 +355,14 @@ class GameRunner {
         //add player pay resources states to stack, for each opponent, in player order, excluding initiating player
 
         //add player get resources states to stack, for each opponent, in player order, excluding intiating player
+    }
+
+    private void addToStack(WyrmAction action, int player, bool b) { // TODO: remove after demo
+        StackFrame frame = new StackFrame(States.AWAIT_GET_RESOURCE, 0);
+        frame.setAllowedResource(Resources.Coins, true);
+        this.gameStack.Push(frame);
+        this.currState = this.gameStack.Peek().getState();
+        this.statePlayer = this.gameStack.Peek().getPlayer();
     }
 
     /*
@@ -432,13 +450,14 @@ class GameRunner {
 
         // All is good, pay cost, entice new dragon and store actions
         this.players[p].addResource(Resources.Coins, -1);
+        this.players[p].addResource(Resources.Meat, -2); // TODO: remove this line after demo, replace with proper resource deduction
+        this.players[p].discardDragon(d.getId());
         WyrmAction[] todoList = this.players[p].getMat().getCaverns()[cavern].addDragon(d);
-        foreach (WyrmAction w in todoList) {
-            this.addToStack(w, p);
-        }
+        this.clearFrame();
+        this.addToStack(WyrmAction.nothingAction(), p, true);
 
         // Pop the stack to clear the frame
-        this.clearFrame();
+        
         
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
@@ -449,5 +468,12 @@ class GameRunner {
     private void handleGameEnd() {
         // TODO: this
         // calculate points, update stack, make something to tell frontend to end the game
+    }
+
+    /*
+    Called to get the board
+    */
+    public ApiResponse apiGetBoard() {
+        return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
 }
