@@ -1,4 +1,4 @@
-class Cavern {
+public class Cavern {
     // Constants
     public static int CAVES_PER_CAVERN = 4;
     public static int MAX_EXPLORE_COUNT = 3;

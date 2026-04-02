@@ -1,4 +1,4 @@
-class ApiResponse {
+public class ApiResponse {
     GameBoard board;
     Player[] players;
     int activePlayer;

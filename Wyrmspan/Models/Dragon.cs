@@ -1,4 +1,4 @@
-class Dragon: IComparable<Dragon> {
+public class Dragon: IComparable<Dragon> {
     int id;
     String name;
     String sprite;

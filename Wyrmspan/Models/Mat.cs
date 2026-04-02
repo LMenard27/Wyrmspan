@@ -1,4 +1,4 @@
-class Mat {
+public class Mat {
     // Constants
     const int CAVERNS_PER_MAT = 3;
 

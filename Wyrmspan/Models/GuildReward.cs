@@ -1,4 +1,4 @@
-class GuildReward {
+public class GuildReward {
     int id;
     int uses;
     WyrmAction action;

@@ -1,4 +1,4 @@
-class StackFrame {
+public class StackFrame {
     States state;
     int player;
     Dictionary<Resources, bool> resourcesAllowed;

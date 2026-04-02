@@ -1,4 +1,4 @@
-class Cave: IComparable<Cave> {
+public class Cave: IComparable<Cave> {
     int id;
     WyrmAction action;
 

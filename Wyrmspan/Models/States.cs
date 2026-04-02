@@ -1,4 +1,4 @@
-enum States
+public enum States
 {
     AWAIT_DISCARD_RESOURCE, // choose resource to discard
     AWAIT_GET_RESOURCE, // choose resource from bank

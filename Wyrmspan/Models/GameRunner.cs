@@ -1,4 +1,4 @@
-class GameRunner {
+public class GameRunner {
     // CONSTANTS
     const int NUM_PLAYERS = 4;
     const int STARTING_CARDS = 3;

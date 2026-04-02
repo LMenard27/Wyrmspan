@@ -1,4 +1,4 @@
-class GameBoard {
+public class GameBoard {
     
     // Constants
     const int SHOP_SIZE = 3;

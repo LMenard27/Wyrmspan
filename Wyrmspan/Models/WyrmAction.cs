@@ -1,4 +1,4 @@
-class WyrmAction {
+public class WyrmAction {
     int id;
     int activator; // 0 = immediate, 1 = explore, 2 = game end
     int maxUses;
