@@ -140,4 +140,16 @@ public class GameBoard {
     public Cave peekCaveDeck() {
         return this.caveDeck.Peek();
     }
+    /*
+    Setter for the Dragon deck
+    */
+    public void setDragonDeck(Stack<Dragon> newDeck) {
+        this.dragonDeck = newDeck;
+    }
+    /*
+    Setter for the Cave deck
+    */
+    public void setCaveDeck(Stack<Cave> newDeck) {
+        this.caveDeck = newDeck;
+    }
 }

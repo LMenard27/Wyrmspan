@@ -1,5 +1,7 @@
 ﻿namespace Wyrmspan;
 using System.Diagnostics;
+using Microsoft.AspNetCore.Authentication;
+
 public class UnitTest1
 {
     [Fact]
@@ -74,4 +76,30 @@ public class UnitTest1
         //Test
         Debug.Assert(matEggCapacity == eggCapacity1 + eggCapacity2, "Mat egg capcity not correctly calculated");
     }
-}
+    [Fact]
+    public void testRefreshShop() {
+        //Setup
+        Dragon dragon1 = new Dragon(1, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
+        Dragon dragon2 = new Dragon(2, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
+        Dragon dragon3 = new Dragon(3, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
+        GameBoard gameBoard = new GameBoard();
+        Stack<Dragon> dragonDeck = new Stack<Dragon>();
+        dragonDeck.Push(dragon1);
+        dragonDeck.Push(dragon2);
+        dragonDeck.Push(dragon3);
+        gameBoard.setDragonDeck(dragonDeck);
+
+        Cave cave1 = new Cave(1, WyrmAction.nothingAction());
+        Cave cave2 = new Cave(2, WyrmAction.nothingAction());
+        Cave cave3 = new Cave(3, WyrmAction.nothingAction());
+        Stack<Cave> caveDeck = new Stack<Cave>();
+        caveDeck.Push(cave1);
+        caveDeck.Push(cave2);
+        caveDeck.Push(cave3);
+        gameBoard.setCaveDeck(caveDeck);
+        //Execute
+        gameBoard.refreshShop();
+        //Test
+        Debug.Assert(gameBoard.peekDragonShop().Contains(dragon1));
+        }
+    }

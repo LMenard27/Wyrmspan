@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\WyrmspanTests\\WyrmspanTests.csproj": {}
+    "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\WyrmspanTests\\WyrmspanTests.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\WyrmspanTests\\WyrmspanTests.csproj": {
+    "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\WyrmspanTests\\WyrmspanTests.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\WyrmspanTests\\WyrmspanTests.csproj",
+        "projectUniqueName": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\WyrmspanTests\\WyrmspanTests.csproj",
         "projectName": "WyrmspanTests",
-        "projectPath": "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\WyrmspanTests\\WyrmspanTests.csproj",
-        "packagesPath": "C:\\Users\\lukem\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\WyrmspanTests\\obj\\",
+        "projectPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\WyrmspanTests\\WyrmspanTests.csproj",
+        "packagesPath": "C:\\Users\\zoeka\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\WyrmspanTests\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\lukem\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\zoeka\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -26,8 +26,8 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj": {
-                "projectPath": "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj"
+              "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj": {
+                "projectPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj"
               }
             }
           }
@@ -361,17 +361,17 @@
         }
       }
     },
-    "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj": {
+    "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj",
+        "projectUniqueName": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj",
         "projectName": "Wyrmspan",
-        "projectPath": "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj",
-        "packagesPath": "C:\\Users\\lukem\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lukem\\OneDrive\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\obj\\",
+        "projectPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj",
+        "packagesPath": "C:\\Users\\zoeka\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\lukem\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\zoeka\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
