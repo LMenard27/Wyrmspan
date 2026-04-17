@@ -23,6 +23,16 @@ public class GameBoard {
 
         this.dragonDiscard = new Stack<Dragon>();
         this.caveDiscard = new Stack<Cave>();
+
+        Dragon dragon1 = new Dragon(-1, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
+
+        Cave cave1 = new Cave(-1, WyrmAction.nothingAction());
+
+        for (int i = 0; i < 50; i++) {
+            this.dragonDeck.Push(dragon1.copy());
+            this.caveDeck.Push(cave1.copy());
+        }
+
     }
     
     /*

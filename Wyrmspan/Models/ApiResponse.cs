@@ -2,9 +2,9 @@ public class ApiResponse {
     GameBoard board;
     Player[] players;
     int activePlayer;
-    StackFrame currFrame;
+    GameStackFrame currFrame;
 
-    public ApiResponse(GameBoard b, Player[] p, int activePlayer, StackFrame frame) {
+    public ApiResponse(GameBoard b, Player[] p, int activePlayer, GameStackFrame frame) {
         this.board = b;
         this.players = p;
         this.activePlayer = activePlayer;
@@ -23,7 +23,7 @@ public class ApiResponse {
         return this.activePlayer;
     }
 
-    public StackFrame getFrame() {
+    public GameStackFrame getFrame() {
         return this.currFrame;
     }
 }

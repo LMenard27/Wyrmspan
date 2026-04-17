@@ -7,6 +7,10 @@ public class Cave: IComparable<Cave> {
         this.action = action;
     }
 
+    public Cave copy() {
+        return new Cave(this.id, this.action);
+    }
+
     public int CompareTo(Cave? other) {
         if (other == null) {
             return 0;

@@ -35,6 +35,10 @@ public class Dragon: IComparable<Dragon> {
         this.bottomPlacable = bottomPlacable;
     }
 
+    public Dragon copy() {
+        return new Dragon(this.id, this.name, this.sprite, this.coinCost, this.meatCost, this.goldCost, this.amethystCost, this.milkCost, this.eggCapacity, this.size, this.victoryPoints, this.nature, this.action, this.topPlacable, this.midPlacable, this.bottomPlacable);
+    }
+
     /*
     Getter for action
     */
