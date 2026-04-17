@@ -1,4 +1,4 @@
-class Guild{
+public class Guild{
     int id;
     String name;
     GuildReward reward1;

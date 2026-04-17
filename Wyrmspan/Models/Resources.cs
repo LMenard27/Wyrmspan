@@ -1,4 +1,4 @@
-enum Resources {
+public enum Resources {
     Coins,
     Meat,
     Amethyst,

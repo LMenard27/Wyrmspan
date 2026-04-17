@@ -1,6 +1,7 @@
-class Mat {
+public class Mat {
     // Constants
     const int CAVERNS_PER_MAT = 3;
+    const int STARTER_EGG_CAPACITY = 2;
 
     // Non-Constants
     Cavern[] caverns;
@@ -26,7 +27,7 @@ class Mat {
     */
     public int getTotEggCapacity() {
         this.calculateCapacity();
-        return this.totEggCapacity;
+        return this.totEggCapacity + STARTER_EGG_CAPACITY;
     }
 
     private void calculateCapacity() {

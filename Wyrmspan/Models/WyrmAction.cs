@@ -1,4 +1,4 @@
-class WyrmAction {
+public class WyrmAction: IComparable<WyrmAction> {
     int id;
     int activator; // 0 = immediate, 1 = explore, 2 = game end
     int maxUses;
@@ -123,5 +123,14 @@ class WyrmAction {
     */
     public bool getGainChoice() {
         return this.gainChoice;
+    }
+
+    public int CompareTo(WyrmAction? other)
+    {
+        if (other == null) {
+            return 0;
+        } else {
+            return this.id - other.id;
+        }
     }
 }

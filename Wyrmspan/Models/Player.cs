@@ -1,6 +1,6 @@
 using System.Collections;
 
-class Player {
+public class Player {
     // CONSTANTS
     const int STARTING_COINS = 6;
     

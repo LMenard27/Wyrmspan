@@ -1,4 +1,4 @@
-class GameBoard {
+public class GameBoard {
     
     // Constants
     const int SHOP_SIZE = 3;
@@ -23,6 +23,16 @@ class GameBoard {
 
         this.dragonDiscard = new Stack<Dragon>();
         this.caveDiscard = new Stack<Cave>();
+
+        Dragon dragon1 = new Dragon(-1, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
+
+        Cave cave1 = new Cave(-1, WyrmAction.nothingAction());
+
+        for (int i = 0; i < 50; i++) {
+            this.dragonDeck.Push(dragon1.copy());
+            this.caveDeck.Push(cave1.copy());
+        }
+
     }
     
     /*
@@ -139,5 +149,17 @@ class GameBoard {
     */
     public Cave peekCaveDeck() {
         return this.caveDeck.Peek();
+    }
+    /*
+    Setter for the Dragon deck
+    */
+    public void setDragonDeck(Stack<Dragon> newDeck) {
+        this.dragonDeck = newDeck;
+    }
+    /*
+    Setter for the Cave deck
+    */
+    public void setCaveDeck(Stack<Cave> newDeck) {
+        this.caveDeck = newDeck;
     }
 }

@@ -1,4 +1,4 @@
-class Dragon: IComparable<Dragon> {
+public class Dragon: IComparable<Dragon> {
     int id;
     String name;
     String sprite;
@@ -33,6 +33,10 @@ class Dragon: IComparable<Dragon> {
         this.topPlacable = topPlacable;
         this.midPlacable = midPlacable;
         this.bottomPlacable = bottomPlacable;
+    }
+
+    public Dragon copy() {
+        return new Dragon(this.id, this.name, this.sprite, this.coinCost, this.meatCost, this.goldCost, this.amethystCost, this.milkCost, this.eggCapacity, this.size, this.victoryPoints, this.nature, this.action, this.topPlacable, this.midPlacable, this.bottomPlacable);
     }
 
     /*

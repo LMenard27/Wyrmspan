@@ -1,10 +1,14 @@
-class Cave: IComparable<Cave> {
+public class Cave: IComparable<Cave> {
     int id;
     WyrmAction action;
 
     public Cave(int id, WyrmAction action) {
         this.id = id;
         this.action = action;
+    }
+
+    public Cave copy() {
+        return new Cave(this.id, this.action);
     }
 
     public int CompareTo(Cave? other) {

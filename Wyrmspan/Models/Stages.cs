@@ -1,4 +1,4 @@
-enum Stages
+public enum Stages
 {
     SETUP_HAND,
     SETUP_RESOURCES,

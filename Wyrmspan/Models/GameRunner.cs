@@ -1,4 +1,4 @@
-class GameRunner {
+public class GameRunner {
     // CONSTANTS
     const int NUM_PLAYERS = 4;
     const int STARTING_CARDS = 3;
@@ -8,7 +8,7 @@ class GameRunner {
     //Stages currStage;
     int statePlayer;
     //int stagePlayer;
-    Stack<StackFrame> gameStack; // stack of what to await. Game ends when this is empty
+    Stack<GameStackFrame> gameStack; // stack of what to await. Game ends when this is empty
     int activePlayer;
     Player[] players;
     bool[] passedPlayers;
@@ -21,31 +21,31 @@ class GameRunner {
         this.board.shuffleCaves();
         this.board.shuffleDragons();
         
-        this.gameStack = new Stack<StackFrame>();
+        this.gameStack = new Stack<GameStackFrame>();
 
         // TODO: un-hardcode this
         // four rounds of gameplay
         ////////////////////////////////////////////////////////////////////////
-        this.gameStack.Push(new StackFrame(States.END_ROUND));             /////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
-        this.gameStack.Push(new StackFrame(States.END_ROUND));             /////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
-        this.gameStack.Push(new StackFrame(States.END_ROUND));             /////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
-        this.gameStack.Push(new StackFrame(States.END_ROUND));             /////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
-        this.gameStack.Push(new StackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
+        this.gameStack.Push(new GameStackFrame(States.END_ROUND));             /////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
+        this.gameStack.Push(new GameStackFrame(States.END_ROUND));             /////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
+        this.gameStack.Push(new GameStackFrame(States.END_ROUND));             /////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
+        this.gameStack.Push(new GameStackFrame(States.END_ROUND));             /////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
+        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
         ////////////////////////////////////////////////////////////////////////
         
         this.activePlayer = 0; // always will start at player 0 regardless of how many players there are
@@ -63,7 +63,12 @@ class GameRunner {
             }
 
             // add choose resource await in reverse order so player 0 goes first
-            this.gameStack.Push(new StackFrame(States.AWAIT_GET_RESOURCE, NUM_PLAYERS - i - 1));
+            GameStackFrame resourceFrame = new GameStackFrame(States.AWAIT_GET_RESOURCE, NUM_PLAYERS - i - 1);
+            resourceFrame.setAllowedResource(Resources.Meat, true);
+            resourceFrame.setAllowedResource(Resources.Amethyst, true);
+            resourceFrame.setAllowedResource(Resources.Gold, true);
+            resourceFrame.setAllowedResource(Resources.Milk, true);
+            this.gameStack.Push(resourceFrame);
         }
 
         this.currState = this.gameStack.Peek().getState();
@@ -88,6 +93,43 @@ class GameRunner {
 
         this.currState = this.gameStack.Peek().getState();
         this.statePlayer = this.gameStack.Peek().getPlayer();
+    }
+
+    /*
+    Pass-through function
+    */
+    public void setDragonDeck(Stack<Dragon> s) {
+        this.board.setDragonDeck(s);
+    }
+
+    /*
+    Pass-through function
+    */
+    public void setCaveDeck(Stack<Cave> s) {
+        this.board.setCaveDeck(s);
+    }
+
+    /*
+    Testing function
+    */
+    public void refreshShop() {
+        this.board.refreshShop();
+    }
+
+    /*
+    Testing function
+    */
+    public void forceAddResource(int p, Resources r, int c) {
+        this.players[p].addResource(r, c);
+    }
+
+    /*
+    Pushes a new frame onto the stack, for testing purposes
+    */
+    public void pushGameStackFrame(GameStackFrame s) {
+        this.gameStack.Push(s);
+        this.currState = s.getState();
+        this.statePlayer = s.getPlayer();
     }
 
     /*
@@ -186,6 +228,20 @@ class GameRunner {
     }
 
     /*
+    For testing purposes
+    */
+    public void forceDragonToHand(int p, Dragon d) {
+        this.players[p].addDragonToHand(d);
+    }
+
+    /*
+    For testing purposes
+    */
+    public void forceCaveToHand(int p, Cave c) {
+        this.players[p].addCaveToHand(c);
+    }
+
+    /*
     Called when a player draws a cave from the shop
     */
     public ApiResponse apiPlayerChooseCaveToGain(int p, Cave c) {
@@ -259,7 +315,7 @@ class GameRunner {
         if (p != this.statePlayer) {
             throw new IllegalMoveException("It is not your turn!");
         }
-        if (this.currState != States.AWAIT_DISCARD_DRAGON) {
+        if (this.currState != States.AWAIT_DISCARD_CAVE) {
             throw new IllegalMoveException("Now is not the time to do that!");
         }
         bool isAvailable = false;
