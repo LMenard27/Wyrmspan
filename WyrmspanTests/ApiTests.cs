@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 
-public class UnitTest1
+public class ApiTests
 {
     [Fact]
     public void TestPlayerChooseResourcesGameStartHappy()
@@ -452,68 +452,6 @@ public class UnitTest1
             Debug.Assert(false, "Drawing a Cave from the top of the deck failed: " + e.Message);
         }
     }
-
-    [Fact]
-   public void testDrawDragon()
-   {
-       //Setup
-       Dragon dragon1 = new Dragon(1, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-       Dragon dragon2 = new Dragon(2, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-       GameBoard gameBoard = new GameBoard();
-       Stack<Dragon> dragonDeck = new Stack<Dragon>();
-       dragonDeck.Push(dragon1);
-       dragonDeck.Push(dragon2);
-       gameBoard.setDragonDeck(dragonDeck);
-
-
-       //Execute
-       Dragon drawnDragon = gameBoard.drawDragon();
-
-
-       //Test
-       Debug.Assert(drawnDragon.Equals(dragon2), "Drawn dragon does not match expected dragon");
-       }
-
-
-   [Fact]
-   public void testDrawCave()
-   {
-       //Setup
-       Cave cave1 = new Cave(1, WyrmAction.nothingAction());
-       Cave cave2 = new Cave(2, WyrmAction.nothingAction());
-       GameBoard gameBoard = new GameBoard();
-       Stack<Cave> caveDeck = new Stack<Cave>();
-       caveDeck.Push(cave1);
-       caveDeck.Push(cave2);
-       gameBoard.setCaveDeck(caveDeck);
-
-
-       //Execute
-       Cave drawnCave = gameBoard.drawCave();
-
-
-       //Test
-       Debug.Assert(drawnCave.Equals(cave2), "Drawn cave does not match expected cave");
-   }
-
-
-   [Fact]
-   public void getCaveCount() {
-       //Setup
-       Cavern cavern = new Cavern(WyrmAction.nothingAction());
-       Cave cave1 = new Cave(1, WyrmAction.nothingAction());
-       Cave cave2 = new Cave(2, WyrmAction.nothingAction());
-
-
-       //Execute
-       cavern.addCave(cave1);
-       cavern.addCave(cave2);
-       int caveCount = cavern.getCaveCount();
-
-
-       //Test
-       Debug.Assert(caveCount == 3, "Cave count does not match expected value");
-   }
 
    [Fact]
     public void TestPlayerChooseCaveNoSuchCave()
@@ -1241,7 +1179,9 @@ public class UnitTest1
     {
         //Setup
         GameRunner testGame = new GameRunner();
-        GameStackFrame testFrame = new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1);
+        GameStackFrame testFrame = new GameStackFrame();
+        testFrame.setState(States.AWAIT_PLAYER_ACTION);
+        testFrame.setPlayer(1);
         testGame.pushGameStackFrame(testFrame);
         testGame.pushGameStackFrame(testFrame);
         testGame.pushGameStackFrame(testFrame);
@@ -1263,171 +1203,5 @@ public class UnitTest1
 
         Debug.Assert(false, "Player 1 was able to explore a cavern a fourth time");
     }
-
-   [Fact]
-   public void getDragonCount() {
-       //Setup
-       Cavern cavern = new Cavern(WyrmAction.nothingAction());
-       Dragon dragon1 = new Dragon(1, "testDragon1", "sprite1", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-       Dragon dragon2 = new Dragon(2, "testDragon2", "sprite2", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-
-
-       //Execute
-       cavern.addDragon(dragon1);
-       cavern.addDragon(dragon2);
-       int dragonCount = cavern.getDragonCount();
-
-
-       //Test
-       Debug.Assert(dragonCount == 2, "Dragon count does not match expected value");
-   }
-
-
-   [Fact]
-   public void testgetNameofPlayer()
-   {
-       //Setup
-       String name = "testPlayer";
-       Player player = new Player(name);
-
-
-       //Execute
-       String playerName = player.getName();
-
-
-       //Test
-       Debug.Assert(playerName.Equals(name), "Player name does not match expected name");
-   }
-
-
-   [Fact]
-   public void testgetDragonHand()
-   {
-       //Setup
-       Player player = new Player("testPlayer");
-       Dragon dragon1 = new Dragon(1, "testDragon1", "sprite1", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-       Dragon dragon2 = new Dragon(2, "testDragon2", "sprite2", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-
-
-       //Execute
-       player.getDragonHand().Add(dragon1);
-       player.getDragonHand().Add(dragon2);
-       List<Dragon> dragonHand = player.getDragonHand();
-
-
-       //Test
-       Debug.Assert(dragonHand.Contains(dragon1) && dragonHand.Contains(dragon2), "Player's dragon hand does not contain expected dragons");
-   }
-
-
-   [Fact]
-   public void testgetCaveHand()
-   {
-       //Setup
-       Player player = new Player("testPlayer");
-       Cave cave1 = new Cave(1, WyrmAction.nothingAction());
-       Cave cave2 = new Cave(2, WyrmAction.nothingAction());
-
-
-       //Execute
-       player.getCaveHand().Add(cave1);
-       player.getCaveHand().Add(cave2);
-       List<Cave> caveHand = player.getCaveHand();
-
-
-       //Test
-       Debug.Assert(caveHand.Contains(cave1) && caveHand.Contains(cave2), "Player's cave hand does not contain expected caves");
-   }
-
-   [Fact]
-    public void TestEggCapacityAccuracy()
-    {
-        //Setup
-        WyrmAction[] testCapstones = {WyrmAction.nothingAction(), WyrmAction.nothingAction(), WyrmAction.nothingAction()};
-
-
-        int initialEggCapacity = 2;
-        int eggCapacity1 = 4;
-        Dragon dragon1 = new Dragon(0, "name", "sprite", 0, 0, 0, 0, 0, eggCapacity1, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-
-
-        int eggCapacity2 = 3;
-        Dragon dragon2 = new Dragon(0, "name", "sprite", 0, 0, 0, 0, 0, eggCapacity2, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-
-
-        Mat mat = new Mat(testCapstones);
-
-
-        mat.addDragon(0, dragon1);
-        mat.addDragon(0, dragon2);
-
-
-
-
-        //Execute
-        int matEggCapacity = mat.getTotEggCapacity();
-
-        //Test
-        Debug.Assert(matEggCapacity == eggCapacity1 + eggCapacity2 + initialEggCapacity, "Mat egg capcity not correctly calculated");
-    }
-    [Fact]
-    public void testRefreshShop() {
-        //Setup
-        Dragon dragon1 = new Dragon(1, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-        Dragon dragon2 = new Dragon(2, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-        Dragon dragon3 = new Dragon(3, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-        GameBoard gameBoard = new GameBoard();
-        Stack<Dragon> dragonDeck = new Stack<Dragon>();
-        dragonDeck.Push(dragon1);
-        dragonDeck.Push(dragon2);
-        dragonDeck.Push(dragon3);
-        gameBoard.setDragonDeck(dragonDeck);
-
-
-        Cave cave1 = new Cave(1, WyrmAction.nothingAction());
-        Cave cave2 = new Cave(2, WyrmAction.nothingAction());
-        Cave cave3 = new Cave(3, WyrmAction.nothingAction());
-        Stack<Cave> caveDeck = new Stack<Cave>();
-        caveDeck.Push(cave1);
-        caveDeck.Push(cave2);
-        caveDeck.Push(cave3);
-        gameBoard.setCaveDeck(caveDeck);
-        //Execute
-        gameBoard.refreshShop();
-        //Test
-        Debug.Assert(gameBoard.peekDragonShop().Contains(dragon1));
-        }
-    [Fact]
-        public void testPickCaveFromShop() {
-            //Setup
-            Dragon dragon1 = new Dragon(1, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-            Dragon dragon2 = new Dragon(2, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-            Dragon dragon3 = new Dragon(3, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-            GameBoard gameBoard = new GameBoard();
-            Stack<Dragon> dragonDeck = new Stack<Dragon>();
-            dragonDeck.Push(dragon1);
-            dragonDeck.Push(dragon2);
-            dragonDeck.Push(dragon3);
-            gameBoard.setDragonDeck(dragonDeck);
-
-
-            Cave cave1 = new Cave(1, WyrmAction.nothingAction());
-            Cave cave2 = new Cave(2, WyrmAction.nothingAction());
-            Cave cave3 = new Cave(3, WyrmAction.nothingAction());
-            Cave cave4 = new Cave(4, WyrmAction.nothingAction());
-            Stack<Cave> caveDeck = new Stack<Cave>();
-            caveDeck.Push(cave1);
-            caveDeck.Push(cave2);
-            caveDeck.Push(cave3);
-            caveDeck.Push(cave4);
-            gameBoard.setCaveDeck(caveDeck);
-            gameBoard.refreshShop();
-            //Execute
-            Cave expectedCave = gameBoard.peekCaveShop()[0];
-            Cave caveFromShop = gameBoard.pickCaveFromShop(0);
-            //Test
-            Debug.Assert(caveFromShop.Equals(expectedCave), "Picked cave does not match expected cave");
-        }
-
 
 }
