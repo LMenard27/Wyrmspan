@@ -501,7 +501,7 @@ public class GameRunner {
     /*
     Takes an array of WyrmActions and adds frames to the stack to represent the action
     */
-    private void addToStack(WyrmAction action, int player) { // TODO: finish this
+    private void addToStack(WyrmAction action, int player) {
         // turns an action into a series of stack frames
         if (action.getActivator() != 0) {
             return;
