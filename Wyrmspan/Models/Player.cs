@@ -10,12 +10,16 @@ public class Player {
     List<Dragon> dragonHand;
     List<Cave> caveHand;
     Dictionary<Resources, int> resources;
+    int points;
+    int paymentSkipped;
 
     public Player(String name) {
         this.name = name;
         this.dragonHand = new List<Dragon>();
         this.caveHand = new List<Cave>();
         this.resources = new Dictionary<Resources, int>();
+        this.points = 0;
+        this.paymentSkipped = 0;
         resources.Add(Resources.Coins, STARTING_COINS);
         resources.Add(Resources.Meat, 0);
         resources.Add(Resources.Amethyst, 0);
@@ -27,6 +31,26 @@ public class Player {
         this.mat = new Mat([WyrmAction.nothingAction(), WyrmAction.nothingAction(), WyrmAction.nothingAction()]);
     }
 
+    public int getPoints() {
+        return this.points;
+    }
+
+    public void setPoints(int p) {
+        this.points = p;
+    }
+
+    public int getSkipped() {
+        return this.paymentSkipped;
+    }
+
+    public void setSkipped(int s) {
+        this.paymentSkipped = s;
+    }
+
+    public void addSkipped(int s) {
+        this.paymentSkipped += s;
+    }
+    
     /*
     Getter for name
     */

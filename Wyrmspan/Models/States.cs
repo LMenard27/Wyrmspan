@@ -9,4 +9,5 @@ public enum States
     AWAIT_DISCARD_CAVE,  // discard cave from hand
     NOP, // no-op
     END_ROUND, // end of round upkeep
+    END_GAME, // end of game
 }
