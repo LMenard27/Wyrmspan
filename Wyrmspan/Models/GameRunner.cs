@@ -197,7 +197,7 @@ public class GameRunner {
     /*
     Called when a player chooses to skip their action
     */
-    public ApiResponse apiPlayerSkipped(int p, Resources r) {
+    public ApiResponse apiPlayerSkipped(int p) {
         // Check legality of move
         if (p != this.statePlayer) {
             throw new IllegalMoveException("It is not your turn!");
@@ -266,6 +266,7 @@ public class GameRunner {
 
     /*
     Called when a player draws a dragon from the shop
+    TODO: make it take an id instead of a Dragon, look up that dragon in master table to gain
     */
     public ApiResponse apiPlayerChooseDragonToGain(int p, Dragon d) {
         // Check legality of move
@@ -320,6 +321,7 @@ public class GameRunner {
 
     /*
     Called when a player draws a cave from the shop
+    TODO: make it take an id instead of a cave and get the cave from a master list
     */
     public ApiResponse apiPlayerChooseCaveToGain(int p, Cave c) {
         // Check legality of move
@@ -434,6 +436,7 @@ public class GameRunner {
 
     /*
     Called when a player excavates a cave
+    TODO: Make it take an id instead of a cave and look it up in a master list
     */
     public ApiResponse apiPlayerExcavates(int p, Cave c, int cavern) {
         // Check legality of move

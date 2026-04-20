@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Xml.Schema;
@@ -12,17 +13,212 @@ Routing is set in Program.cs
 public class GameController : Controller {
     // 
     // GET: /Game/
+    [HttpGet]
     public string Index() {
-        return "This is my default action...";
+        return "... but nobody came.";
     }
 
     // 
     // GET: /Game/Initialize/
+    [HttpGet]
     public IActionResult Initialize() {
-        ApiResponse response = GameRunner.mainGame.apiGetBoard();
-        IActionResult output = serializeResponse(response);
-        return output;
+        try {
+            ApiResponse response = GameRunner.mainGame.apiGetBoard();
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
     }
+
+    // 
+    // POST: /Game/ChooseResourceToGain/
+    [HttpPost]
+    public IActionResult ChooseResourceToGain(int player, string resource) {
+        try {
+            Enum.TryParse<Resources>(resource, true, out var r);
+            ApiResponse response = GameRunner.mainGame.apiPlayerChooseResourceToGain(player, r);
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+    // 
+    // POST: /Game/PlayerSkip/
+    [HttpPost]
+    public IActionResult PlayerSkip(int player) {
+        try {
+            ApiResponse response = GameRunner.mainGame.apiPlayerSkipped(player);
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+    // 
+    // POST: /Game/ChooseResourceToDiscard/
+    [HttpPost]
+    public IActionResult ChooseResourceToDiscard(int player, string resource) {
+        try {
+            Enum.TryParse<Resources>(resource, true, out var r);
+            ApiResponse response = GameRunner.mainGame.apiPlayerChooseResourceToDiscard(player, r);
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+    // 
+    // POST: /Game/ChooseDragonToGain/
+    [HttpPost]
+    public IActionResult ChooseDragonToGain(int player, int id) {
+        try {
+            Dragon d = new Dragon(id, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
+            ApiResponse response = GameRunner.mainGame.apiPlayerChooseDragonToGain(player, d);
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+    // 
+    // POST: /Game/ChooseCaveToGain/
+    [HttpPost]
+    public IActionResult ChooseCaveToGain(int player, int id) {
+        try {
+            Cave c = new Cave(id, WyrmAction.nothingAction());
+            ApiResponse response = GameRunner.mainGame.apiPlayerChooseCaveToGain(player, c);
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+    // 
+    // POST: /Game/ChooseDragonToDiscard/
+    [HttpPost]
+    public IActionResult ChooseDragonToDiscard(int player, int id) {
+        try {
+            Dragon d = new Dragon(id, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
+            ApiResponse response = GameRunner.mainGame.apiPlayerChooseDragonToDiscard(player, d);
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+    // 
+    // POST: /Game/ChooseCaveToDiscard/
+    [HttpPost]
+    public IActionResult ChooseCaveToDiscard(int player, int id) {
+        try {
+            Cave c = new Cave(id, WyrmAction.nothingAction());
+            ApiResponse response = GameRunner.mainGame.apiPlayerChooseCaveToDiscard(player, c);
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+    // 
+    // POST: /Game/Excavate/
+    [HttpPost]
+    public IActionResult Excavate(int player, int CaveID, int CavernID) {
+        try {
+            Cave c = new Cave(CaveID, WyrmAction.nothingAction());
+            ApiResponse response = GameRunner.mainGame.apiPlayerExcavates(player, c, CavernID);
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+    // 
+    // POST: /Game/Explore/
+    [HttpPost]
+    public IActionResult Explore(int player, int CavernID) {
+        try {
+            ApiResponse response = GameRunner.mainGame.apiPlayerExplores(player, CavernID);
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+    // 
+    // POST: /Game/Entice/
+    [HttpPost]
+    public IActionResult Entice(int player, int dragonID, int CavernID) {
+        try {
+            Dragon d = new Dragon(dragonID, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
+            ApiResponse response = GameRunner.mainGame.apiPlayerEntices(player, d, CavernID);
+            IActionResult output = serializeResponse(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // Helper Functions for serialization
+
 
     private IActionResult serializeResponse(ApiResponse resp) {
         var output = new
@@ -98,7 +294,7 @@ public class GameController : Controller {
     public object serializeFrame(GameStackFrame gsf) {
         var output = new
         {
-            state = gsf.getState(),
+            state = gsf.getState().ToString(),
             state_player = gsf.getPlayer(),
             description = gsf.getDesc(),
             resources = new
