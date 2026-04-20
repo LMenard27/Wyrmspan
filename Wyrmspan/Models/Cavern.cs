@@ -20,6 +20,8 @@ public class Cavern {
         this.dragonIndex = 0;
         this.capstoneReward = capstone;
         this.totEggCapacity = 0;
+
+        this.addCave(new Cave(-1, WyrmAction.nothingAction()));
     }
 
     /*
@@ -110,7 +112,7 @@ public class Cavern {
     /*
     Getter for Dragons
     */
-    public Dragon[] GetDragons() {
+    public Dragon[] getDragons() {
         return this.dragons;
     }
 

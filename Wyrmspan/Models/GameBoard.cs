@@ -34,6 +34,10 @@ public class GameBoard {
         }
 
     }
+
+    public Resources[] getRewards() {
+        return this.guildCycleRewards;
+    }
     
     /*
     Refreshes the shop by moving all cards from both shops to their respective discards, clearing both shops,

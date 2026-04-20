@@ -3,6 +3,22 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Wyrmspan</h1>
+    <button id="initBtn">Initialize Game Board</button>
+
+    <script>
+        document.getElementById("initBtn").addEventListener("click", function () {
+            fetch("http://localhost:5012/Game/Initialize", {
+                method: "GET"
+            })
+            .then(response => response.text())
+            .then(data => {
+                console.log(data);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+    </script>
+
 </div>

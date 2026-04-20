@@ -2,6 +2,8 @@ public class GameRunner {
     // CONSTANTS
     const int NUM_PLAYERS = 4;
     const int STARTING_CARDS = 3;
+    // STATICS
+    public static GameRunner mainGame = new GameRunner();
     // NON-CONSTANTS
     GameBoard board;
     States currState;
@@ -149,6 +151,13 @@ public class GameRunner {
         this.gameStack.Push(s);
         this.currState = s.getState();
         this.statePlayer = s.getPlayer();
+    }
+
+    /*
+    Returns the board
+    */
+    public ApiResponse apiGetBoard() {
+        return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
 
     /*
@@ -718,7 +727,7 @@ public class GameRunner {
             score += 3 * (p.getResources()[Resources.Reputation] / 6); // temporary 3 points every time around
 
             foreach (Cavern c in p.getMat().getCaverns()) {
-                foreach (Dragon d in c.GetDragons()) {
+                foreach (Dragon d in c.getDragons()) {
                     score += d.getVP();
                 }
             }
