@@ -74,4 +74,8 @@ public class GameStackFrame {
     public void setAllowedResource(Resources r, bool b) {
         this.resourcesAllowed[r] = b;
     }
+
+    public string getDesc() {
+        return this.description;
+    }
 }

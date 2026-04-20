@@ -2,6 +2,8 @@ public class GameRunner {
     // CONSTANTS
     const int NUM_PLAYERS = 4;
     const int STARTING_CARDS = 3;
+    // STATICS
+    public static GameRunner mainGame = new GameRunner();
     // NON-CONSTANTS
     GameBoard board;
     States currState;
@@ -12,6 +14,7 @@ public class GameRunner {
     int activePlayer;
     Player[] players;
     bool[] passedPlayers;
+    int prevStatePlayer;
 
     public GameRunner() {
 
@@ -26,6 +29,7 @@ public class GameRunner {
         // TODO: un-hardcode this
         // four rounds of gameplay
         ////////////////////////////////////////////////////////////////////////
+        this.gameStack.Push(new GameStackFrame(States.END_GAME));              /////
         this.gameStack.Push(new GameStackFrame(States.END_ROUND));             /////
         this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
         this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
@@ -84,15 +88,32 @@ public class GameRunner {
         this.gameStack.Pop();
 
         if (this.gameStack.Count == 0) {
-            // trigger game end
+            this.gameStack.Clear();
+            return;
         }
 
         if (this.gameStack.Peek().getState() ==  States.END_ROUND) {
             this.handleRoundEnd();
         }
 
+        this.prevStatePlayer = this.statePlayer;
         this.currState = this.gameStack.Peek().getState();
         this.statePlayer = this.gameStack.Peek().getPlayer();
+
+        if (this.currState == States.AWAIT_GET_RESOURCE || this.currState == States.AWAIT_GET_CAVE || this.currState == States.AWAIT_GET_DRAGON) {
+            if (this.players[this.statePlayer].getSkipped() > 0) {
+                this.players[this.statePlayer].addSkipped(-1);
+                clearFrame(); // since gains are after losses, opting to skip a loss skips the next gain
+            }
+        } else {
+            this.players[this.prevStatePlayer].setSkipped(0);
+        }
+
+        if (this.currState == States.AWAIT_PLAYER_ACTION) {
+            if (this.passedPlayers[this.statePlayer]) {
+                clearFrame(); // passed players continue getting passed
+            }
+        }
     }
 
     /*
@@ -133,6 +154,13 @@ public class GameRunner {
     }
 
     /*
+    Returns the board
+    */
+    public ApiResponse apiGetBoard() {
+        return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
+    }
+
+    /*
     Called when a player chooses a resource to gain from the bank
     */
     public ApiResponse apiPlayerChooseResourceToGain(int p, Resources r) {
@@ -148,10 +176,46 @@ public class GameRunner {
         }
 
         // All is good, add a resource to player
-        this.players[p].addResource(r, 1);
+        if (r == Resources.Eggs) {
+            if (this.players[p].getResources()[r] < this.players[p].getMat().getTotEggCapacity()) {
+                this.players[p].addResource(r, 1); // extra eggs get voided
+            }   
+        } else {
+            this.players[p].addResource(r, 1);
+        }
 
         // Pop the stack to clear the frame
         this.clearFrame();
+
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
+        
+        return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
+    }
+
+    /*
+    Called when a player chooses to skip their action
+    */
+    public ApiResponse apiPlayerSkipped(int p) {
+        // Check legality of move
+        if (p != this.statePlayer) {
+            throw new IllegalMoveException("It is not your turn!");
+        }
+
+        if (this.currState == States.AWAIT_DISCARD_RESOURCE || this.currState == States.AWAIT_DISCARD_CAVE || this.currState == States.AWAIT_DISCARD_DRAGON) {
+            this.players[p].addSkipped(1);
+        }
+        if (this.currState == States.AWAIT_PLAYER_ACTION) {
+            this.passedPlayers[p] = true;
+        }
+
+        // Pop the stack to clear the frame
+        this.clearFrame();
+
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
         
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
@@ -161,6 +225,11 @@ public class GameRunner {
     */
     public ApiResponse apiMillStack() {
         this.clearFrame();
+
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
+
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
 
@@ -187,12 +256,17 @@ public class GameRunner {
 
         // Pop the stack to clear the frame
         this.clearFrame();
+
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
         
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
 
     /*
     Called when a player draws a dragon from the shop
+    TODO: make it take an id instead of a Dragon, look up that dragon in master table to gain
     */
     public ApiResponse apiPlayerChooseDragonToGain(int p, Dragon d) {
         // Check legality of move
@@ -223,6 +297,10 @@ public class GameRunner {
 
         // Pop the stack to clear the frame
         this.clearFrame();
+
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
         
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
@@ -243,6 +321,7 @@ public class GameRunner {
 
     /*
     Called when a player draws a cave from the shop
+    TODO: make it take an id instead of a cave and get the cave from a master list
     */
     public ApiResponse apiPlayerChooseCaveToGain(int p, Cave c) {
         // Check legality of move
@@ -273,6 +352,10 @@ public class GameRunner {
 
         // Pop the stack to clear the frame
         this.clearFrame();
+
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
         
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
@@ -303,6 +386,10 @@ public class GameRunner {
 
         // Pop the stack to clear the frame
         this.clearFrame();
+
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
         
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
@@ -333,6 +420,10 @@ public class GameRunner {
 
         // Pop the stack to clear the frame
         this.clearFrame();
+
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
         
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
@@ -340,10 +431,12 @@ public class GameRunner {
     private void handleRoundEnd() {
         this.board.refreshShop();
         this.gameStack.Pop();
+        this.passedPlayers = new bool[NUM_PLAYERS]; // reset passed to false
     }
 
     /*
-    Called when a player excavates a cave TODO: add egg cost
+    Called when a player excavates a cave
+    TODO: Make it take an id instead of a cave and look it up in a master list
     */
     public ApiResponse apiPlayerExcavates(int p, Cave c, int cavern) {
         // Check legality of move
@@ -368,9 +461,28 @@ public class GameRunner {
             throw new IllegalMoveException("You have already excavated the maximum number of caves for this cavern!");
         }
 
+        int eggsRequired;
+
+        switch(numExcavated) {
+            case 0:
+                eggsRequired = 0;
+                break;
+            case 1:
+                eggsRequired = 1;
+                break;
+            default:
+                eggsRequired = 2;
+                break;
+        }
+
+        if (this.players[p].getResources()[Resources.Eggs] < eggsRequired) {
+            throw new IllegalMoveException("You do not have enough eggs to do that!");
+        }
+
         // All is good, pay cost, excavate new cave and store actions
-        // TODO: remove from hand
         this.players[p].addResource(Resources.Coins, -1);
+        this.players[p].addResource(Resources.Eggs, 0 - eggsRequired);
+        this.players[p].discardCave(c.getId());
         WyrmAction[] todoList = this.players[p].getMat().getCaverns()[cavern].addCave(c);
         foreach (WyrmAction w in todoList) {
             this.addToStack(w, p);
@@ -378,6 +490,10 @@ public class GameRunner {
 
         // Pop the stack to clear the frame
         this.clearFrame();
+
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
         
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
@@ -385,7 +501,7 @@ public class GameRunner {
     /*
     Takes an array of WyrmActions and adds frames to the stack to represent the action
     */
-    private void addToStack(WyrmAction action, int player) { // TODO: finish this
+    private void addToStack(WyrmAction action, int player) {
         // turns an action into a series of stack frames
         if (action.getActivator() != 0) {
             return;
@@ -394,14 +510,98 @@ public class GameRunner {
         Dictionary<Resources, int> gains = action.serializeResources();
         Dictionary<Resources, int> losses = action.serializeResources(true);
 
+        // repeat number of uses:
+        for (int numUses = 0; numUses < action.getMaxUses(); numUses++) {
+            // if it is a choice, allow paying one resource of any allowed type
+            if (action.getPayChoice()) {
+                GameStackFrame frame = new GameStackFrame(States.AWAIT_DISCARD_RESOURCE);
+                foreach (Resources r in Enum.GetValues(typeof(Resources))){
+                    frame.setAllowedResource(r, losses[r] > 0);
+                }
+                frame.setPlayer(this.statePlayer);
+                this.gameStack.Push(frame);
+            } else {
+                // if it is not a choice, pay one of every allowed type
+                foreach (Resources r in Enum.GetValues(typeof(Resources))) {
+                    for (int i = 0; i < losses[r]; i++) {
+                        GameStackFrame frame = new GameStackFrame(States.AWAIT_DISCARD_RESOURCE);
+                        frame.setAllowedResource(r, true);
+                        frame.setPlayer(this.statePlayer);
+                        this.gameStack.Push(frame);
+                    }
+                }
+            }
 
-        //add player pay resources states to stack, one for every resource in gains
+            // if it is a choice, allow gaining one allowed resource
+            if (action.getGainChoice()) {
+                GameStackFrame frame = new GameStackFrame(States.AWAIT_GET_RESOURCE);
+                foreach (Resources r in Enum.GetValues(typeof(Resources))){
+                    frame.setAllowedResource(r, gains[r] > 0);
+                }
+                frame.setPlayer(this.statePlayer);
+                this.gameStack.Push(frame);
+            } else {
+                //add player get resources states to stack, one for every resource in gains
+                foreach (Resources r in Enum.GetValues(typeof(Resources))) {
+                    for (int i = 0; i < gains[r]; i++) {
+                        GameStackFrame frame = new GameStackFrame(States.AWAIT_GET_RESOURCE);
+                        frame.setAllowedResource(r, true);
+                        frame.setPlayer(this.statePlayer);
+                        this.gameStack.Push(frame);
+                    }
+                }
+            }
+        }
 
-        //add player get resources states to stack, one for every resource in gains
+        // Opponent math
 
-        //add player pay resources states to stack, for each opponent, in player order, excluding initiating player
+        for (int p = 0; p < NUM_PLAYERS; p++) {
+            if (p == this.statePlayer) {
+                continue;
+            }
 
-        //add player get resources states to stack, for each opponent, in player order, excluding intiating player
+            for (int numUses = 0; numUses < action.getOppUses(); numUses++) {
+                // if it is a choice, allow paying one resource of any allowed type
+                if (action.getPayChoice()) {
+                    GameStackFrame frame = new GameStackFrame(States.AWAIT_DISCARD_RESOURCE);
+                    foreach (Resources r in Enum.GetValues(typeof(Resources))){
+                        frame.setAllowedResource(r, losses[r] > 0);
+                    }
+                    frame.setPlayer(p);
+                    this.gameStack.Push(frame);
+                } else {
+                    // if it is not a choice, pay one of every allowed type
+                    foreach (Resources r in Enum.GetValues(typeof(Resources))) {
+                        for (int i = 0; i < losses[r]; i++) {
+                            GameStackFrame frame = new GameStackFrame(States.AWAIT_DISCARD_RESOURCE);
+                            frame.setAllowedResource(r, true);
+                            frame.setPlayer(p);
+                            this.gameStack.Push(frame);
+                        }
+                    }
+                }
+
+                // if it is a choice, allow gaining one allowed resource
+                if (action.getGainChoice()) {
+                    GameStackFrame frame = new GameStackFrame(States.AWAIT_GET_RESOURCE);
+                    foreach (Resources r in Enum.GetValues(typeof(Resources))){
+                        frame.setAllowedResource(r, gains[r] > 0);
+                    }
+                    frame.setPlayer(p);
+                    this.gameStack.Push(frame);
+                } else {
+                    //add player get resources states to stack, one for every resource in gains
+                    foreach (Resources r in Enum.GetValues(typeof(Resources))) {
+                        for (int i = 0; i < gains[r]; i++) {
+                            GameStackFrame frame = new GameStackFrame(States.AWAIT_GET_RESOURCE);
+                            frame.setAllowedResource(r, true);
+                            frame.setPlayer(p);
+                            this.gameStack.Push(frame);
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /*
@@ -457,15 +657,16 @@ public class GameRunner {
 
         // Pop the stack to clear the frame
         this.clearFrame();
+
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
         
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
 
     /*
     Called when a player entices a dragon
-    TODO: remove dragon from hand
-    TODO: remove resources from hand
-    TODO: verify resources exist
     */
     public ApiResponse apiPlayerEntices(int p, Dragon d, int cavern) {
         // Check legality of move
@@ -489,9 +690,22 @@ public class GameRunner {
         if (numEnticed >= maxEntices)  {
             throw new IllegalMoveException("You have already enticed the maximum number of dragons for this cavern!");
         }
+        if (players[p].getResources()[Resources.Meat] < d.getMeatCost()) {
+            throw new IllegalMoveException("You do not have enough meat to do that!");
+        }
+        if (players[p].getResources()[Resources.Amethyst] < d.getAmethystCost()) {
+            throw new IllegalMoveException("You do not have enough amethyst to do that!");
+        }
+        if (players[p].getResources()[Resources.Gold] < d.getGoldCost()) {
+            throw new IllegalMoveException("You do not have enough gold to do that!");
+        }
 
         // All is good, pay cost, entice new dragon and store actions
         this.players[p].addResource(Resources.Coins, -1);
+        this.players[p].addResource(Resources.Meat, 0 - d.getMeatCost());
+        this.players[p].addResource(Resources.Amethyst, 0 - d.getAmethystCost());
+        this.players[p].addResource(Resources.Gold, 0 - d.getGoldCost());
+        this.players[p].discardDragon(d.getId());
         WyrmAction[] todoList = this.players[p].getMat().getCaverns()[cavern].addDragon(d);
         foreach (WyrmAction w in todoList) {
             this.addToStack(w, p);
@@ -500,14 +714,37 @@ public class GameRunner {
         // Pop the stack to clear the frame
         this.clearFrame();
         
+        if (this.gameStack.Count == 0) {
+            return this.handleGameEnd();
+        }
+
         return new ApiResponse(this.board, this.players, this.activePlayer, this.gameStack.Peek());
     }
 
     /*
     Handle the end of game
     */
-    private void handleGameEnd() {
-        // TODO: this
-        // calculate points, update stack, make something to tell frontend to end the game
+    private ApiResponse handleGameEnd() {
+        foreach (Player p in this.players) {
+            int score = 0;
+            score += 3 * (p.getResources()[Resources.Reputation] / 6); // temporary 3 points every time around
+
+            foreach (Cavern c in p.getMat().getCaverns()) {
+                foreach (Dragon d in c.getDragons()) {
+                    score += d.getVP();
+                }
+            }
+            
+            score +=  p.getResources()[Resources.Coins];
+
+            int numResources = p.getResources()[Resources.Meat] + p.getResources()[Resources.Amethyst] + p.getResources()[Resources.Gold] + p.getResources()[Resources.Milk];
+            score += numResources / 4;
+
+            score += p.getResources()[Resources.Eggs];
+
+            // TODO: per-round competitions
+        }
+
+        return new ApiResponse(this.board, this.players, 0, new GameStackFrame(States.END_GAME));
     }
 }
