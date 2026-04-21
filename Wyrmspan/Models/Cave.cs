@@ -1,21 +1,28 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 public class Cave: IComparable<Cave> {
-    int id;
-    WyrmAction action;
+    public int Id { get; set; }
+    
+    [Column("wyrm_actions")]
+    public int WyrmActionId { get; set; }
+    public WyrmAction Action { get; set; }
 
     public Cave(int id, WyrmAction action) {
-        this.id = id;
-        this.action = action;
+        this.Id = id;
+        this.Action = action;
     }
 
+    public Cave() {}
+
     public Cave copy() {
-        return new Cave(this.id, this.action);
+        return new Cave(this.Id, this.Action);
     }
 
     public int CompareTo(Cave? other) {
         if (other == null) {
             return 0;
         } else {
-            return this.id - other.id;
+            return this.Id - other.Id;
         }
     }
 
@@ -23,13 +30,13 @@ public class Cave: IComparable<Cave> {
     Getter for action
     */
     public WyrmAction getAction() {
-        return this.action;
+        return this.Action;
     }
 
     /*
     Getter for id
     */
     public int getId() {
-        return this.id;
+        return this.Id;
     }
 }

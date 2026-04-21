@@ -14,14 +14,14 @@ public class GameController : Controller {
     // 
     // GET: /Game/
     [HttpGet]
-    public string Index() {
-        return "... but nobody came.";
+    public IActionResult Index() {
+        return Ok(JsonSerializer.Serialize(DataCache.Actions.Select(serializeAction)));
     }
 
     // 
-    // GET: /Game/Initialize/
+    // GET: /Game/GetBoard/
     [HttpGet]
-    public IActionResult Initialize() {
+    public IActionResult GetBoard() {
         try {
             ApiResponse response = GameRunner.mainGame.apiGetBoard();
             IActionResult output = serializeResponse(response);
@@ -89,8 +89,7 @@ public class GameController : Controller {
     [HttpPost]
     public IActionResult ChooseDragonToGain(int player, int id) {
         try {
-            Dragon d = new Dragon(id, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
-            ApiResponse response = GameRunner.mainGame.apiPlayerChooseDragonToGain(player, d);
+            ApiResponse response = GameRunner.mainGame.apiPlayerChooseDragonToGain(player, id);
             IActionResult output = serializeResponse(response);
             return output;
         } catch (IllegalMoveException e) {
@@ -106,8 +105,7 @@ public class GameController : Controller {
     [HttpPost]
     public IActionResult ChooseCaveToGain(int player, int id) {
         try {
-            Cave c = new Cave(id, WyrmAction.nothingAction());
-            ApiResponse response = GameRunner.mainGame.apiPlayerChooseCaveToGain(player, c);
+            ApiResponse response = GameRunner.mainGame.apiPlayerChooseCaveToGain(player, id);
             IActionResult output = serializeResponse(response);
             return output;
         } catch (IllegalMoveException e) {
@@ -237,21 +235,40 @@ public class GameController : Controller {
     public object serializeAction(WyrmAction wa) {
         var output = new
         {
+            id = wa.Id,
             activator = wa.getActivator(),
             maxUses = wa.getMaxUses(),
             oppUses = wa.getOppUses(),
             payChoice = wa.getPayChoice(),
             gainChoice = wa.getGainChoice(),
-            resources = new
+            numGains = wa.numReward,
+            numLosses = wa.numCost,
+            gains = new
             {
-                coins = wa.serializeResources()[Resources.Coins],
-                meat = wa.serializeResources()[Resources.Meat],
-                amethyst = wa.serializeResources()[Resources.Amethyst],
-                gold = wa.serializeResources()[Resources.Gold],
-                milk = wa.serializeResources()[Resources.Milk],
-                eggs = wa.serializeResources()[Resources.Eggs],
-                reputation = wa.serializeResources()[Resources.Reputation],
-            }
+                coins = wa.serializeResources()["Coins"],
+                meat = wa.serializeResources()["Meat"],
+                gold = wa.serializeResources()["Gold"],
+                amethyst = wa.serializeResources()["Amethyst"],
+                milk = wa.serializeResources()["Milk"],
+                eggs = wa.serializeResources()["Eggs"],
+                reputation = wa.serializeResources()["Reputation"],
+                dragonCards = wa.serializeResources()["Dragons"],
+                caveCards = wa.serializeResources()["Caves"],
+            },
+
+            losses = new
+            {
+                coins = wa.serializeResources(true)["Coins"],
+                meat = wa.serializeResources(true)["Meat"],
+                gold = wa.serializeResources(true)["Gold"],
+                amethyst = wa.serializeResources(true)["Amethyst"],
+                milk = wa.serializeResources(true)["Milk"],
+                eggs = wa.serializeResources(true)["Eggs"],
+                reputation = wa.serializeResources(true)["Reputation"],
+                dragonCards = wa.serializeResources(true)["Dragons"],
+                caveCards = wa.serializeResources(true)["Caves"],
+            },
+            description = wa.description
         };
 
         return output;
@@ -265,8 +282,8 @@ public class GameController : Controller {
             sprite = d.getSprite(),
             coinCost = d.getCoinCost(),
             meatCost = d.getMeatCost(),
-            amethystCost = d.getAmethystCost(),
             goldCost = d.getGoldCost(),
+            amethystCost = d.getAmethystCost(),
             milkCost = d.getMilkCost(),
             eggCapacity = d.getEggCapacity(),
             size = d.getSize(),
@@ -301,8 +318,8 @@ public class GameController : Controller {
             {
                 coins = gsf.getAllowedResources()[Resources.Coins],
                 meat = gsf.getAllowedResources()[Resources.Meat],
-                amethyst = gsf.getAllowedResources()[Resources.Amethyst],
                 gold = gsf.getAllowedResources()[Resources.Gold],
+                amethyst = gsf.getAllowedResources()[Resources.Amethyst],
                 milk = gsf.getAllowedResources()[Resources.Milk],
                 reputation = gsf.getAllowedResources()[Resources.Reputation],
             }
@@ -321,8 +338,8 @@ public class GameController : Controller {
             {
                 coins = p.getResources()[Resources.Coins],
                 meat = p.getResources()[Resources.Meat],
-                amethyst = p.getResources()[Resources.Amethyst],
                 gold = p.getResources()[Resources.Gold],
+                amethyst = p.getResources()[Resources.Amethyst],
                 milk = p.getResources()[Resources.Milk],
                 reputation = p.getResources()[Resources.Reputation],
             },
