@@ -26,141 +26,136 @@
 
 </div>
 
-@model GameController
+@using Wyrmspan.Models 
+@model Player
+
+@{
+    ViewData["Title"] = Model.getName() + "'s Mat";
+    var resources = Model.getResources();
+    var dragonHand = Model.getDragonHand();
+    var caveHand = Model.getCaveHand();
+    
+    var playerMat = Model.getMat();
+    var caverns = playerMat.getCaverns(); 
+    
+    var cavernNames = new string[] { "CRIMSON CAVERN", "GOLDEN GROTTO", "AMETHYST ABYSS" };
+    var cavernColors = new string[] { "#ffe6e6", "#fff4e6", "#f4e6ff" };
+}
 
 <style>
-    body {
-        font-family: Arial;
-    }
+    .game-board { font-family: sans-serif; background: #f4f4f4; padding: 20px; display: flex; flex-direction: column; gap: 20px; }
+    
+    /* Resources */
+    .resource-bar { display: flex; justify-content: space-around; background: #2b7a78; color: white; padding: 15px; border-radius: 5px; font-weight: bold; }
+    
+    /* Rows & Actions */
+    .mat-row { display: flex; align-items: center; padding: 10px; border-radius: 5px; min-height: 150px; gap: 10px; border: 1px solid #ccc; }
+    .row-title { width: 120px; font-weight: bold; text-align: center; }
+    .action-btn { background: #38b000; color: white; border: 2px solid #007200; width: 50px; height: 50px; border-radius: 5px; cursor: pointer; }
 
-    .top-bar {
-        display: flex;
-        gap: 20px;
-        padding: 10px;
-        background: #eee;
-        border-bottom: 2px solid #ccc;
-    }
+    /* Slots and Cards */
+    .slot { width: 100px; height: 140px; border: 2px dashed #999; display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; font-size: 0.7rem; text-align: center; padding: 5px; }
+    .slot.occupied { border-style: solid; border-color: #333; }
+    .slot.empty { color: #aaa; }
 
-    .resource {
-        padding: 5px 10px;
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    .board {
-        height: 300px;
-        border: 2px solid #999;
-        margin: 20px 0;
-        position: relative;
-    }
-
-    .action-button {
-        position: absolute;
-        padding: 10px;
-        background: teal;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
-
-    .hand {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .card-row {
-        display: flex;
-        gap: 10px;
-    }
-
-    .card-slot {
-        width: 100px;
-        height: 140px;
-        border: 2px dashed #aaa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #fafafa;
-    }
-
-    .card {
-        border: 1px solid #333;
-        background: white;
-        padding: 5px;
-        text-align: center;
-        width: 100%;
-        height: 100%;
-    }
+    /* Hand */
+    .hand-container { background: #333; padding: 15px; border-radius: 5px; color: white; }
+    .hand-section { display: flex; gap: 10px; padding-bottom: 10px; overflow-x: auto; }
+    .card-hand { width: 110px; height: 150px; background: white; color: black; border-radius: 4px; padding: 5px; font-size: 0.8rem; display: flex; flex-direction: column; }
+    .card-hand.empty-slot { background: #555; border: 1px dashed #888; color: #999; }
 </style>
 
-<!-- 🔝 RESOURCE BAR -->
-<div class="top-bar">
-    
-    <div class="resource">Gold: </div>
-    <div class="resource">Milk: @Model.</div>
-    <div class="resource">Meat: @Model.Meat</div>
-    <div class="resource">Crystal: @Model.Crystal</div>
-    <div class="resource">Gems: @Model.Gems</div>
-    <div class="resource">Eggs: @Model.Eggs</div>
-</div>
+<div class="game-board">
 
-<!-- 🗺️ BOARD -->
-<div class="board">
+    <div class="resource-bar">
+        <span>🪙 @resources[Resources.Coins]</span>
+        <span>🥛 @resources[Resources.Milk]</span>
+        <span>🥩 @resources[Resources.Meat]</span>
+        <span>💎 @resources[Resources.Amethyst]</span>
+        <span>🧱 @resources[Resources.Gold]</span>
+        <span>🥚 @resources[Resources.Eggs] / @playerMat.getTotEggCapacity()</span>
+        <span>⭐ @resources[Resources.Reputation]</span>
+    </div>
 
-    <!-- Example action buttons -->
-    <form method="post" asp-action="Excavate">
-        <button class="action-button" style="top:20px; left:50px;">Excavate</button>
-    </form>
+    <div class="player-mat" style="display: flex; flex-direction: column; gap: 10px;">
+        @for (int i = 0; i < caverns.Length; i++)
+        {
+            var cavern = caverns[i];
+            var rowDragons = cavern.getDragons();
+            var rowCaves = cavern.getCaves();
 
-    <form method="post" asp-action="Explore">
-        <button class="action-button" style="top:100px; left:150px;">Explore</button>
-    </form>
+            <div class="mat-row" style="background-color: @cavernColors[i];">
+                <div class="row-title">@cavernNames[i]</div>
+                
+                <button class="action-btn" title="Explores: @cavern.getExploreCount()">Explore</button>
 
-    <form method="post" asp-action="Mine">
-        <button class="action-button" style="top:200px; left:250px;">Mine</button>
-    </form>
+                @* Render the 4 spaces per cavern *@
+                @for (int s = 0; s < 4; s++)
+                {
+                    bool hasDragon = rowDragons[s] != null;
+                    bool hasCave = rowCaves[s] != null && rowCaves[s].getId() != -1;
 
-</div>
+                    <div class="slot @(hasDragon || hasCave ? "occupied" : "empty")">
+                        @if (hasDragon)
+                        {
+                            <strong>@rowDragons[s].getName()</strong>
+                            <span>VP: @rowDragons[s].getVP()</span>
+                        }
+                        else if (hasCave)
+                        {
+                            <span style="color: brown;">Cave Area</span>
+                            <small>ID: @rowCaves[s].getId()</small>
+                        }
+                        else
+                        {
+                            <span>Empty Space</span>
+                        }
+                    </div>
+                    
+                    @* Green Action Buttons between slots as requested *@
+                    if (s < 3) { <button class="action-btn">Action</button> }
+                }
+            </div>
+        }
+    </div>
 
-<!-- 🃏 PLAYER HAND -->
-<div class="hand">
-
-    <!-- DRAGON CARDS -->
-    <div>
-        <h3>Dragons</h3>
-        <div class="card-row">
+    <div class="hand-container">
+        <h4>Dragons (@dragonHand.Count / 7)</h4>
+        <div class="hand-section">
             @for (int i = 0; i < 7; i++)
             {
-                <div class="card-slot">
-                    @if (i < Model.DragonCards.Count)
-                    {
-                        <div class="card">
-                            @Model.DragonCards[i].Name
-                        </div>
-                    }
-                </div>
+                if (i < dragonHand.Count)
+                {
+                    <div class="card-hand">
+                        <strong>@dragonHand[i].getName()</strong>
+                        <hr />
+                        <small>Size: @dragonHand[i].getSize()</small>
+                        <small>VP: @dragonHand[i].getVP()</small>
+                    </div>
+                }
+                else
+                {
+                    <div class="card-hand empty-slot">Empty</div>
+                }
+            }
+        </div>
+
+        <h4>Caves (@caveHand.Count / 7)</h4>
+        <div class="hand-section">
+            @for (int i = 0; i < 7; i++)
+            {
+                if (i < caveHand.Count)
+                {
+                    <div class="card-hand">
+                        <strong>Cave Card</strong>
+                        <small>ID: @caveHand[i].getId()</small>
+                    </div>
+                }
+                else
+                {
+                    <div class="card-hand empty-slot">Empty</div>
+                }
             }
         </div>
     </div>
-
-    <!-- CAVE CARDS -->
-    <div>
-        <h3>Caves</h3>
-        <div class="card-row">
-            @for (int i = 0; i < 7; i++)
-            {
-                <div class="card-slot">
-                    @if (i < Model.CaveCards.Count)
-                    {
-                        <div class="card">
-                            @Model.CaveCards[i].Name
-                        </div>
-                    }
-                </div>
-            }
-        </div>
-    </div>
-
 </div>
