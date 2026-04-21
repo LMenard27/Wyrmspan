@@ -3,6 +3,128 @@
     ViewData["Title"] = "Home Page";
 }
 
+<style>
+    body {
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    }
+
+    .top-bar {
+        display: flex;
+        gap: 20px;
+        padding: 10px;
+        background: rgb(214, 240, 240);
+        border-bottom: 2px solid #ccc;
+    }
+
+    .resource {
+        padding: 5px 10px;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .board {
+        height: 500px;
+        border: 3px solid #382316;
+        border-radius: 6px;
+        margin: 20px 0;
+        position: relative;
+        background-color: rgb(199, 239, 239);
+        background:
+            linear-gradient(rgba(199,239,239,0.6),rgba(199,239,239,0.6)),
+            url('/images/map.PNG');
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+    }
+
+    .cavern-slot {
+        width: 250px;
+        height: 150px;
+        background: rgba(121, 166, 166, 0.75);
+        border: 2px solid rgb(0, 54, 54);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .cavern-card {
+        width: 100%;
+        height: 100%;
+    }
+    .cavern-container {
+        position: absolute;
+        top: 10px;
+        left: 10%;
+        transform: translateX((-25%));
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+    .cavern-row {
+        display: flex;
+        gap: 10px;
+    }
+
+    .action-button {
+        position: absolute;
+        padding: 10px;
+        background: teal;
+        color: white;
+        border: 2px solid rgb(0, 54, 54);
+        cursor: pointer;
+    }
+
+    .hand {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .card-row {
+        display: flex;
+        gap: 10px;
+    }
+
+    .card-slot {
+        width: 100px;
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgb(238, 233, 224);
+        border-radius: 6px;
+    }
+
+    .card {
+        border: 1px solid rgb(186, 195, 195);
+        background: white;
+        box-shadow: 1px 1px 2px rgb(174, 178, 178);
+        padding: 2px;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+    }
+    .card img {
+        max-height: 75%;
+        width: auto;
+        object-fit: contain;
+    }
+    .card-text {
+        font-size: 12px;
+        font-weight: bold;
+        margin-top: 2px;
+        color: #333;
+    }
+</style>
+
 <div class="text-center">
     <h1 class="display-4">Wyrmspan</h1>
     <button id="initBtn">Initialize Game Board</button>
@@ -22,93 +144,28 @@
         });
     </script>
 
-
-
-</div>
-
-@model GameController
-
-<style>
-    body {
-        font-family: Arial;
-    }
-
-    .top-bar {
-        display: flex;
-        gap: 20px;
-        padding: 10px;
-        background: #eee;
-        border-bottom: 2px solid #ccc;
-    }
-
-    .resource {
-        padding: 5px 10px;
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-    }
-
-    .board {
-        height: 300px;
-        border: 2px solid #999;
-        margin: 20px 0;
-        position: relative;
-    }
-
-    .action-button {
-        position: absolute;
-        padding: 10px;
-        background: teal;
-        color: white;
-        border: none;
-        cursor: pointer;
-    }
-
-    .hand {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .card-row {
-        display: flex;
-        gap: 10px;
-    }
-
-    .card-slot {
-        width: 100px;
-        height: 140px;
-        border: 2px dashed #aaa;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #fafafa;
-    }
-
-    .card {
-        border: 1px solid #333;
-        background: white;
-        padding: 5px;
-        text-align: center;
-        width: 100%;
-        height: 100%;
-    }
-</style>
-
 <!-- 🔝 RESOURCE BAR -->
 <div class="top-bar">
-    
-    <div class="resource">Gold: </div>
-    <div class="resource">Milk: @Model.</div>
-    <div class="resource">Meat: @Model.Meat</div>
-    <div class="resource">Crystal: @Model.Crystal</div>
-    <div class="resource">Gems: @Model.Gems</div>
-    <div class="resource">Eggs: @Model.Eggs</div>
+    <div class="resource">Coins:</div>
+    <div class="resource">Meat:</div>
+    <div class="resource">Gold:</div>
+    <div class="resource">Amethyst:</div>
+    <div class="resource">Milk:</div>
+    <div class="resource">Eggs:</div>
 </div>
 
 <!-- 🗺️ BOARD -->
 <div class="board">
-
+    <div class ="cavern-container">
+        @for (int i =0; i<3; i++){
+            <div class ="cavern-row">
+            @for (int j=0; j < 4; j++){
+                <div class="cavern-slot">
+                </div>
+            }
+            </div>
+        }
+    </div>
     <!-- Example action buttons -->
     <form method="post" asp-action="Excavate">
         <button class="action-button" style="top:20px; left:50px;">Excavate</button>
@@ -118,8 +175,8 @@
         <button class="action-button" style="top:100px; left:150px;">Explore</button>
     </form>
 
-    <form method="post" asp-action="Mine">
-        <button class="action-button" style="top:200px; left:250px;">Mine</button>
+    <form method="post" asp-action="Entice">
+        <button class="action-button" style="top:200px; left:250px;">Entice</button>
     </form>
 
 </div>
@@ -134,10 +191,20 @@
             @for (int i = 0; i < 7; i++)
             {
                 <div class="card-slot">
-                    @if (i < Model.DragonCards.Count)
+                    @if (i < 3) 
                     {
                         <div class="card">
-                            @Model.DragonCards[i].Name
+                            @if(i == 0) {
+                                <img src = "/images/quetzacoatlColour.PNG" alt = "Red, yellow, green Quetzacoatl Dragon" />
+                            }
+                            @if(i == 1) {
+                                <img src = "/images/blueDragon.PNG" alt = "Blue eastern dragon" />
+                            }
+                            @if(i == 2) {
+                                <img src = "/images/redDragon.PNG" alt = "Red and yellow eastern dragon" />
+                            }
+                            <div class="card-text">QueztalCoatl</div>
+                            <div class="card-text">Description</div>
                         </div>
                     }
                 </div>
@@ -152,10 +219,17 @@
             @for (int i = 0; i < 7; i++)
             {
                 <div class="card-slot">
-                    @if (i < Model.CaveCards.Count)
+                    @if (i < 3)
                     {
                         <div class="card">
-                            @Model.CaveCards[i].Name
+                            @if(i==0){
+                                <img src = "/images/caveCentral.PNG" alt= "Cave"/>
+                            }
+                            @if(i==1){
+                                <img src = "/images/caveCorner.PNG" alt="Cave"/>
+                            }
+                            <div class = "card-text">Cave</div>
+                            <div class="card-text">Description</div>
                         </div>
                     }
                 </div>

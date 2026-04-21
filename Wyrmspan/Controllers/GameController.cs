@@ -19,7 +19,7 @@ public class GameController : Controller {
     }
 
     // 
-    // GET: /Game/Initialize/
+    // GET: /Game/GetBoard/
     [HttpGet]
     public IActionResult Initialize() {
         try {

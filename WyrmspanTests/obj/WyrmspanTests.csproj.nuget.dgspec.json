@@ -26,8 +26,8 @@
           "net10.0": {
             "targetAlias": "net10.0",
             "projectReferences": {
-              "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj": {
-                "projectPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj"
+              "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj": {
+                "projectPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj"
               }
             }
           }
@@ -361,14 +361,14 @@
         }
       }
     },
-    "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj": {
+    "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj",
+        "projectUniqueName": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj",
         "projectName": "Wyrmspan",
-        "projectPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj",
+        "projectPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj",
         "packagesPath": "C:\\Users\\zoeka\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\obj\\",
+        "outputPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\Wyrmspan\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\zoeka\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -400,6 +400,12 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[10.0.6, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
