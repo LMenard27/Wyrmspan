@@ -101,7 +101,7 @@ public class GameRunner {
         this.currState = this.gameStack.Peek().getState();
         this.statePlayer = this.gameStack.Peek().getPlayer();
 
-        if (this.currState == States.AWAIT_GET_RESOURCE || this.currState == States.AWAIT_GET_CAVE || this.currState == States.AWAIT_GET_DRAGON) {
+        if (this.currState == States.AWAIT_GET_RESOURCE || this.currState == States.AWAIT_GET_CAVE || this.currState == States.AWAIT_GET_DRAGON || this.currState == States.AWAIT_GAIN_BENEFIT) {
             if (this.players[this.statePlayer].getSkipped() > 0) {
                 this.players[this.statePlayer].addSkipped(-1);
                 clearFrame(); // since gains are after losses, opting to skip a loss skips the next gain
@@ -169,7 +169,7 @@ public class GameRunner {
         if (p != this.statePlayer) {
             throw new IllegalMoveException("It is not your turn!");
         }
-        if (this.currState != States.AWAIT_GET_RESOURCE) {
+        if (this.currState != States.AWAIT_GET_RESOURCE && this.currState != States.AWAIT_GAIN_BENEFIT) {
             throw new IllegalMoveException("Now is not the time to do that!");
         }
         if (!this.gameStack.Peek().getAllowedResources()[r]) {
@@ -242,7 +242,7 @@ public class GameRunner {
         if (p != this.statePlayer) {
             throw new IllegalMoveException("It is not your turn!");
         }
-        if (this.currState != States.AWAIT_DISCARD_RESOURCE) {
+        if (this.currState != States.AWAIT_DISCARD_RESOURCE && this.currState != States.AWAIT_DISCARD_BENEFIT) {
             throw new IllegalMoveException("Now is not the time to do that!");
         }
         if (!this.gameStack.Peek().getAllowedResources()[r]) {
@@ -269,14 +269,21 @@ public class GameRunner {
     Called when a player draws a dragon from the shop
     TODO: make it take an id instead of a Dragon, look up that dragon in master table to gain
     */
-    public ApiResponse apiPlayerChooseDragonToGain(int p, Dragon d) {
+    public ApiResponse apiPlayerChooseDragonToGain(int p, int dragonIndex) {
         // Check legality of move
         if (p != this.statePlayer) {
             throw new IllegalMoveException("It is not your turn!");
         }
-        if (this.currState != States.AWAIT_GET_DRAGON) {
+        if (this.currState != States.AWAIT_GET_DRAGON && this.currState != States.AWAIT_GAIN_BENEFIT) {
             throw new IllegalMoveException("Now is not the time to do that!");
         }
+        
+        var d = DataCache.Dragons.FirstOrDefault(d => d.Id == dragonIndex);
+
+        if (d == null) {
+            throw new IllegalMoveException("That dragon does not exist!");
+        }
+
         bool isAvailable = false;
         if (this.board.peekDragonDeck() == d) {
             isAvailable = true;
@@ -324,14 +331,21 @@ public class GameRunner {
     Called when a player draws a cave from the shop
     TODO: make it take an id instead of a cave and get the cave from a master list
     */
-    public ApiResponse apiPlayerChooseCaveToGain(int p, Cave c) {
+    public ApiResponse apiPlayerChooseCaveToGain(int p, int caveIndex) {
         // Check legality of move
         if (p != this.statePlayer) {
             throw new IllegalMoveException("It is not your turn!");
         }
-        if (this.currState != States.AWAIT_GET_CAVE) {
+        if (this.currState != States.AWAIT_GET_CAVE && this.currState != States.AWAIT_GAIN_BENEFIT) {
             throw new IllegalMoveException("Now is not the time to do that!");
         }
+
+        Cave c = DataCache.Caves.FirstOrDefault(i => i.Id == caveIndex);
+
+        if (c == null) {
+            throw new IllegalMoveException("That cave does not exist!");
+        }
+
         bool isAvailable = false;
         if (this.board.peekCaveDeck() == c) {
             isAvailable = true;
@@ -369,7 +383,7 @@ public class GameRunner {
         if (p != this.statePlayer) {
             throw new IllegalMoveException("It is not your turn!");
         }
-        if (this.currState != States.AWAIT_DISCARD_DRAGON) {
+        if (this.currState != States.AWAIT_DISCARD_DRAGON && this.currState != States.AWAIT_DISCARD_BENEFIT) {
             throw new IllegalMoveException("Now is not the time to do that!");
         }
         bool isAvailable = false;
@@ -403,7 +417,7 @@ public class GameRunner {
         if (p != this.statePlayer) {
             throw new IllegalMoveException("It is not your turn!");
         }
-        if (this.currState != States.AWAIT_DISCARD_CAVE) {
+        if (this.currState != States.AWAIT_DISCARD_CAVE && this.currState != States.AWAIT_DISCARD_BENEFIT) {
             throw new IllegalMoveException("Now is not the time to do that!");
         }
         bool isAvailable = false;
@@ -503,103 +517,98 @@ public class GameRunner {
     Takes an array of WyrmActions and adds frames to the stack to represent the action
     */
     private void addToStack(WyrmAction action, int player) {
-        // turns an action into a series of stack frames
-        if (action.getActivator() != 0) {
-            return;
-        }
-
-        Dictionary<Resources, int> gains = action.serializeResources();
-        Dictionary<Resources, int> losses = action.serializeResources(true);
-
-        // repeat number of uses:
-        for (int numUses = 0; numUses < action.getMaxUses(); numUses++) {
-            // if it is a choice, allow paying one resource of any allowed type
-            if (action.getPayChoice()) {
-                GameStackFrame frame = new GameStackFrame(States.AWAIT_DISCARD_RESOURCE);
-                foreach (Resources r in Enum.GetValues(typeof(Resources))){
-                    frame.setAllowedResource(r, losses[r] > 0);
+        for (int i = 0; i < action.maxUses; i++) {
+            // losses
+            for (int j = 0; j < action.numCost; j++) {
+                GameStackFrame frame = new GameStackFrame();
+                // Set every resource to what it is, and allow dragons and caves only if they are allowed
+                if (action.serializeResources(true)["Dragons"] || action.serializeResources(true)["Caves"]) {
+                    frame.setState(States.AWAIT_DISCARD_BENEFIT);
+                } else {
+                    frame.setState(States.AWAIT_DISCARD_RESOURCE);
                 }
-                frame.setPlayer(this.statePlayer);
+                frame.setAllowedResource(Resources.Coins, action.serializeResources(true)["Coins"]);
+                frame.setAllowedResource(Resources.Meat, action.serializeResources(true)["Meat"]);
+                frame.setAllowedResource(Resources.Gold, action.serializeResources(true)["Gold"]);
+                frame.setAllowedResource(Resources.Amethyst, action.serializeResources(true)["Amethyst"]);
+                frame.setAllowedResource(Resources.Reputation, action.serializeResources(true)["Reputation"]);
+                frame.setAllowedResource(Resources.Eggs, action.serializeResources(true)["Eggs"]);
+                frame.setAllowedResource(Resources.Milk, action.serializeResources(true)["Milk"]);
+                frame.setPlayer(player);
+
                 this.gameStack.Push(frame);
-            } else {
-                // if it is not a choice, pay one of every allowed type
-                foreach (Resources r in Enum.GetValues(typeof(Resources))) {
-                    for (int i = 0; i < losses[r]; i++) {
-                        GameStackFrame frame = new GameStackFrame(States.AWAIT_DISCARD_RESOURCE);
-                        frame.setAllowedResource(r, true);
-                        frame.setPlayer(this.statePlayer);
-                        this.gameStack.Push(frame);
-                    }
-                }
             }
 
-            // if it is a choice, allow gaining one allowed resource
-            if (action.getGainChoice()) {
-                GameStackFrame frame = new GameStackFrame(States.AWAIT_GET_RESOURCE);
-                foreach (Resources r in Enum.GetValues(typeof(Resources))){
-                    frame.setAllowedResource(r, gains[r] > 0);
+            // gains
+            for (int j = 0; j < action.numReward; j++) {
+                GameStackFrame frame = new GameStackFrame();
+                // Set every resource to what it is, and allow dragons and caves only if they are allowed
+                if (action.serializeResources(true)["Dragons"] || action.serializeResources(true)["Caves"]) {
+                    frame.setState(States.AWAIT_GAIN_BENEFIT);
+                } else {
+                    frame.setState(States.AWAIT_GET_RESOURCE);
                 }
-                frame.setPlayer(this.statePlayer);
+                frame.setAllowedResource(Resources.Coins, action.serializeResources()["Coins"]);
+                frame.setAllowedResource(Resources.Meat, action.serializeResources()["Meat"]);
+                frame.setAllowedResource(Resources.Gold, action.serializeResources()["Gold"]);
+                frame.setAllowedResource(Resources.Amethyst, action.serializeResources()["Amethyst"]);
+                frame.setAllowedResource(Resources.Reputation, action.serializeResources()["Reputation"]);
+                frame.setAllowedResource(Resources.Eggs, action.serializeResources()["Eggs"]);
+                frame.setAllowedResource(Resources.Milk, action.serializeResources()["Milk"]);
+                frame.setPlayer(player);
+
                 this.gameStack.Push(frame);
-            } else {
-                //add player get resources states to stack, one for every resource in gains
-                foreach (Resources r in Enum.GetValues(typeof(Resources))) {
-                    for (int i = 0; i < gains[r]; i++) {
-                        GameStackFrame frame = new GameStackFrame(States.AWAIT_GET_RESOURCE);
-                        frame.setAllowedResource(r, true);
-                        frame.setPlayer(this.statePlayer);
-                        this.gameStack.Push(frame);
-                    }
-                }
             }
         }
 
         // Opponent math
 
         for (int p = 0; p < NUM_PLAYERS; p++) {
-            if (p == this.statePlayer) {
+            if (p == player) {
                 continue;
             }
 
-            for (int numUses = 0; numUses < action.getOppUses(); numUses++) {
-                // if it is a choice, allow paying one resource of any allowed type
-                if (action.getPayChoice()) {
-                    GameStackFrame frame = new GameStackFrame(States.AWAIT_DISCARD_RESOURCE);
-                    foreach (Resources r in Enum.GetValues(typeof(Resources))){
-                        frame.setAllowedResource(r, losses[r] > 0);
+            for (int i = 0; i < action.oppUses; i++) {
+                // losses
+                for (int j = 0; j < action.numCost; j++) {
+                    GameStackFrame frame = new GameStackFrame();
+                    // Set every resource to what it is, and allow dragons and caves only if they are allowed
+                    if (action.serializeResources(true)["Dragons"] || action.serializeResources(true)["Caves"]) {
+                        frame.setState(States.AWAIT_DISCARD_BENEFIT);
+                    } else {
+                        frame.setState(States.AWAIT_DISCARD_RESOURCE);
                     }
+                    frame.setAllowedResource(Resources.Coins, action.serializeResources(true)["Coins"]);
+                    frame.setAllowedResource(Resources.Meat, action.serializeResources(true)["Meat"]);
+                    frame.setAllowedResource(Resources.Gold, action.serializeResources(true)["Gold"]);
+                    frame.setAllowedResource(Resources.Amethyst, action.serializeResources(true)["Amethyst"]);
+                    frame.setAllowedResource(Resources.Reputation, action.serializeResources(true)["Reputation"]);
+                    frame.setAllowedResource(Resources.Eggs, action.serializeResources(true)["Eggs"]);
+                    frame.setAllowedResource(Resources.Milk, action.serializeResources(true)["Milk"]);
                     frame.setPlayer(p);
+
                     this.gameStack.Push(frame);
-                } else {
-                    // if it is not a choice, pay one of every allowed type
-                    foreach (Resources r in Enum.GetValues(typeof(Resources))) {
-                        for (int i = 0; i < losses[r]; i++) {
-                            GameStackFrame frame = new GameStackFrame(States.AWAIT_DISCARD_RESOURCE);
-                            frame.setAllowedResource(r, true);
-                            frame.setPlayer(p);
-                            this.gameStack.Push(frame);
-                        }
-                    }
                 }
 
-                // if it is a choice, allow gaining one allowed resource
-                if (action.getGainChoice()) {
-                    GameStackFrame frame = new GameStackFrame(States.AWAIT_GET_RESOURCE);
-                    foreach (Resources r in Enum.GetValues(typeof(Resources))){
-                        frame.setAllowedResource(r, gains[r] > 0);
+                // gains
+                for (int j = 0; j < action.numReward; j++) {
+                    GameStackFrame frame = new GameStackFrame();
+                    // Set every resource to what it is, and allow dragons and caves only if they are allowed
+                    if (action.serializeResources(true)["Dragons"] || action.serializeResources(true)["Caves"]) {
+                        frame.setState(States.AWAIT_GAIN_BENEFIT);
+                    } else {
+                        frame.setState(States.AWAIT_GET_RESOURCE);
                     }
+                    frame.setAllowedResource(Resources.Coins, action.serializeResources()["Coins"]);
+                    frame.setAllowedResource(Resources.Meat, action.serializeResources()["Meat"]);
+                    frame.setAllowedResource(Resources.Gold, action.serializeResources()["Gold"]);
+                    frame.setAllowedResource(Resources.Amethyst, action.serializeResources()["Amethyst"]);
+                    frame.setAllowedResource(Resources.Reputation, action.serializeResources()["Reputation"]);
+                    frame.setAllowedResource(Resources.Eggs, action.serializeResources()["Eggs"]);
+                    frame.setAllowedResource(Resources.Milk, action.serializeResources()["Milk"]);
                     frame.setPlayer(p);
+
                     this.gameStack.Push(frame);
-                } else {
-                    //add player get resources states to stack, one for every resource in gains
-                    foreach (Resources r in Enum.GetValues(typeof(Resources))) {
-                        for (int i = 0; i < gains[r]; i++) {
-                            GameStackFrame frame = new GameStackFrame(States.AWAIT_GET_RESOURCE);
-                            frame.setAllowedResource(r, true);
-                            frame.setPlayer(p);
-                            this.gameStack.Push(frame);
-                        }
-                    }
                 }
             }
         }

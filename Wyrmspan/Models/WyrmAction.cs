@@ -1,13 +1,23 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 public class WyrmAction: IComparable<WyrmAction> {
     public int Id { get; set; }
-    int activator; // 0 = immediate, 1 = explore, 2 = game end
-    int maxUses;
-    int oppUses;
-    int gains;
-    int losses;
-    bool payChoice;
-    bool gainChoice;
-    String description;
+    public int activator { get; set; }   // 0 = immediate, 1 = explore, 2 = game end
+    [Column("max_uses")]
+    public int maxUses { get; set; }
+    [Column("opp_uses")]
+    public int oppUses { get; set; }
+    public int gains { get; set; }
+    public int losses { get; set; }
+    [Column("choose_cost")]
+    public bool payChoice { get; set; }
+    [Column("choose_reward")]
+    public bool gainChoice { get; set; }
+    [Column("num_cost")]
+    public int numCost { get; set; }
+    [Column("num_reward")]
+    public int numReward { get; set; }
+    public string description { get; set; }
 
     static WyrmAction NOTHING_ACTION = new WyrmAction(-1, 0, 0, 0, 0, 0, false, false, "Do-Nothing action");
 
@@ -30,9 +40,9 @@ public class WyrmAction: IComparable<WyrmAction> {
     public WyrmAction() { }
 
     /*
-    Converts a base 10 number into how many of each resource can be gained. Optionally, pass in true to do losses instead.
+    Converts a base 10 number into whether each resource can be gained. Optionally, pass in true to do losses instead.
     */
-    public Dictionary<Resources, int> serializeResources(bool doLosses) {
+    public Dictionary<string, bool> serializeResources(bool doLosses) {
 
         int workingInt = this.gains;
 
@@ -41,30 +51,36 @@ public class WyrmAction: IComparable<WyrmAction> {
             workingInt = this.losses;
         }
 
-        int numRep = workingInt % 10;
-        workingInt %= 10;
+        int numCaves = workingInt % 10;
+        workingInt /= 10;
+        int numDragons = workingInt % 10;
+        workingInt /= 10;
         int numEggs = workingInt % 10;
-        workingInt %= 10;
+        workingInt /= 10;
         int numMilk = workingInt % 10;
-        workingInt %= 10;
-        int numGold = workingInt % 10;
-        workingInt %= 10;
+        workingInt /= 10;
+        int numRep = workingInt % 10;
+        workingInt /= 10;
         int numAmethyst = workingInt % 10;
-        workingInt %= 10;
+        workingInt /= 10;
+        int numGold = workingInt % 10;
+        workingInt /= 10;
         int numMeat = workingInt % 10;
-        workingInt %= 10;
+        workingInt /= 10;
         int numCoins = workingInt % 10;
-        workingInt %= 10;
+        workingInt /= 10;
 
-        Dictionary<Resources, int> output = new Dictionary<Resources, int>
+        Dictionary<string, bool> output = new Dictionary<string, bool>
         {
-            { Resources.Coins, numCoins },
-            { Resources.Meat, numMeat },
-            { Resources.Amethyst, numAmethyst },
-            { Resources.Gold, numGold },
-            { Resources.Milk, numMilk },
-            { Resources.Eggs, numEggs },
-            { Resources.Reputation, numRep },
+            { "Coins", numCoins == 1},
+            { "Meat", numMeat == 1},
+            { "Amethyst", numAmethyst == 1},
+            { "Gold", numGold == 1},
+            { "Milk", numMilk == 1},
+            { "Eggs", numEggs == 1},
+            { "Reputation", numRep == 1},
+            { "Dragons", numDragons == 1},
+            { "Caves", numCaves == 1},
 
         };
 
@@ -74,7 +90,7 @@ public class WyrmAction: IComparable<WyrmAction> {
     /*
     Converts a base 10 number into how many of each resource can be gained. Optionally, pass in true to do losses instead.
     */
-    public Dictionary<Resources, int> serializeResources() {
+    public Dictionary<string, bool> serializeResources() {
         return this.serializeResources(false);
     }
 

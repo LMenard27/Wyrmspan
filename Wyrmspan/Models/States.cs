@@ -10,4 +10,6 @@ public enum States
     NOP = 7, // no-op
     END_ROUND = 8, // end of round upkeep
     END_GAME = 9, // end of game
+    AWAIT_DISCARD_BENEFIT = 10,
+    AWAIT_GAIN_BENEFIT = 11,
 }
