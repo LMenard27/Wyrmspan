@@ -1,2 +1,5 @@
 Wyrmspan\obj
 Wyrmspan\bin
+Wyrmspan\appsettings.json
+WyrmspanTests\bin
+WyrmspanTests\obj
