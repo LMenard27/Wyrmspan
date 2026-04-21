@@ -151,29 +151,15 @@
     <h1 class="display-4">Wyrmspan</h1>
     <button id="initBtn">Initialize Game Board</button>
 
-    <script>
-        document.getElementById("initBtn").addEventListener("click", function () {
-            fetch("http://localhost:5012/Game/Initialize", {
-                method: "GET"
-            })
-            .then(response => response.text())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
-        });
-    </script>
-
 <!-- 🔝 RESOURCE BAR -->
 <div class="top-bar">
-    <div class="resource">Coins:</div>
-    <div class="resource">Meat:</div>
-    <div class="resource">Gold:</div>
-    <div class="resource">Amethyst:</div>
-    <div class="resource">Milk:</div>
-    <div class="resource">Eggs:</div>
+    <div class="resource", id="coinCounter">Coins:</div>
+    <div class="resource", id="meatCounter">Meat:</div>
+    <div class="resource", id="goldCounter">Gold:</div>
+    <div class="resource", id="amethystCounter">Amethyst:</div>
+    <div class="resource", id="milkCounter">Milk:</div>
+    <div class="resource", id="eggCounter">Eggs:</div>
+    <div class= "resource", id="reputationCounter">Reputation:</div>
 
     <!-- Example action buttons -->
     <form method="post" asp-action="Excavate">
@@ -214,22 +200,11 @@
                 @for (int i = 0; i < 7; i++)
                 {
                     <div class="card-slot">
-                        @if (i < 3) 
-                        {
-                            <div class="card">
-                                @if(i == 0) {
-                                    <img src = "/images/quetzacoatlColour.PNG" alt = "Red, yellow, green Quetzacoatl Dragon" />
-                                }
-                                @if(i == 1) {
-                                    <img src = "/images/blueDragon.PNG" alt = "Blue eastern dragon" />
-                                }
-                                @if(i == 2) {
-                                    <img src = "/images/redDragon.PNG" alt = "Red and yellow eastern dragon" />
-                                }
-                                <div class="card-text">QueztalCoatl</div>
-                                <div class="card-text">Description</div>
-                            </div>
-                        }
+                        <div class="card">
+                            <img src = "default.png" alt = "Red, yellow, green Quetzacoatl Dragon" />
+                            <div class="card-text", name="dragonName">QueztalCoatl</div>
+                            <div class="card-text", name="dragonDesc">Description</div>
+                        </div>
                     </div>
                 }
             </div>
@@ -242,19 +217,10 @@
                 @for (int i = 0; i < 7; i++)
                 {
                     <div class="card-slot">
-                        @if (i < 3)
-                        {
-                            <div class="card">
-                                @if(i==0){
-                                    <img src = "/images/caveCentral.PNG" alt= "Cave"/>
-                                }
-                                @if(i==1){
-                                    <img src = "/images/caveCorner.PNG" alt="Cave"/>
-                                }
-                                <div class = "card-text">Cave</div>
-                                <div class="card-text">Description</div>
-                            </div>
-                        }
+                        <div class="card">
+                            <img src = "default.png" alt= "Cave"/>
+                            <div class="card-text", name="caveDesc">Description</div>
+                        </div>
                     </div>
                 }
             </div>
@@ -268,22 +234,11 @@
                     @for (int i = 0; i < 3; i++)
                     {
                         <div class="card-slot">
-                            @if (i < 3) 
-                            {
-                                <div class="card">
-                                    @if(i == 0) {
-                                        <img src = "/images/quetzacoatlColour.PNG" alt = "Red, yellow, green Quetzacoatl Dragon" />
-                                    }
-                                    @if(i == 1) {
-                                        <img src = "/images/blueDragon.PNG" alt = "Blue eastern dragon" />
-                                    }
-                                    @if(i == 2) {
-                                        <img src = "/images/redDragon.PNG" alt = "Red and yellow eastern dragon" />
-                                    }
-                                    <div class="card-text">QueztalCoatl</div>
-                                    <div class="card-text">Description</div>
-                                </div>
-                            }
+                            <div class="card">
+                                <img src = "/images/quetzacoatlColour.PNG" alt = "Red, yellow, green Quetzacoatl Dragon" />
+                                <div class="card-text", name="shopDragonName">QueztalCoatl</div>
+                                <div class="card-text", name="shopDragonDesc">Description</div>
+                            </div>
                         </div>
                     }
                 </div>
@@ -313,3 +268,82 @@
     </div>
     
 </div>
+
+<script>
+        var currPlayer = 0;
+
+        document.getElementById("initBtn").addEventListener("click", function () {
+            fetch("http://localhost:5012/Game/GetBoard", {
+                method: "GET"
+            })
+            .then(response => response.text())
+            .then(data => {
+                //console.log(data);
+                displayBoardInfo(JSON.parse(data));
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+
+        function displayBoardInfo(data) {
+            document.getElementById("coinCounter").innerHTML = "Coins: " + data.players[currPlayer].resources.coins;
+            document.getElementById("meatCounter").innerHTML = "Meat: " + data.players[currPlayer].resources.meat;
+            document.getElementById("goldCounter").innerHTML = "Gold: " + data.players[currPlayer].resources.gold;
+            document.getElementById("amethystCounter").innerHTML = "Amethyst: " + data.players[currPlayer].resources.amethyst;
+            document.getElementById("milkCounter").innerHTML = "Milk: " + data.players[currPlayer].resources.milk;
+            document.getElementById("eggCounter").innerHTML = "Eggs: " + data.players[currPlayer].resources.eggs;
+            document.getElementById("reputationCounter").innerHTML = "Reputation: " + data.players[currPlayer].resources.reputation;
+
+            let dragonNames = document.getElementsByName("dragonName");
+
+            for (let i = 0; i < dragonNames.length; i++) {
+                try {
+                    dragonNames[i].innerHTML = data.players[currPlayer].dragon_hand[i].name;
+                } catch {
+                    dragonNames[i].innerHTML = "";
+                }
+            }
+
+            let dragonDescs = document.getElementsByName("dragonDesc");
+
+            for (let i = 0; i < dragonDescs.length; i++) {
+                try {
+                    dragonDescs[i].innerHTML = data.players[currPlayer].dragon_hand[i].action.description;
+                } catch {
+                    dragonDescs[i].innerHTML = "";
+                }
+            }
+
+            let caveDescs = document.getElementsByName("caveDesc");
+
+            for (let i = 0; i < caveDescs.length; i++) {
+                try {
+                    caveDescs[i].innerHTML = data.players[currPlayer].cave_hand[i].action.description;
+                } catch {
+                    caveDescs[i].innerHTML = "";
+                }
+            }
+
+            let shopDragonNames = document.getElementsByName("shopDragonName");
+
+            for (let i = 0; i < shopDragonNames.length; i++) {
+                try {
+                    shopDragonNames[i].innerHTML = data.board.dragonShop[i].name;
+                } catch {
+                    shopDragonNames[i].innerHTML = "";
+                }
+            }
+
+            let shopDragonDescs = document.getElementsByName("shopDragonDesc");
+
+            for (let i = 0; i < shopDragonDescs.length; i++) {
+                try {
+                    shopDragonDescs[i].innerHTML = data.board.dragonShop[i].action.description;
+                } catch {
+                    shopDragonDescs[i].innerHTML = "";
+                }
+            }
+
+        }
+    </script>

@@ -341,6 +341,7 @@ public class GameController : Controller {
                 gold = p.getResources()[Resources.Gold],
                 amethyst = p.getResources()[Resources.Amethyst],
                 milk = p.getResources()[Resources.Milk],
+                eggs = p.getResources()[Resources.Eggs],
                 reputation = p.getResources()[Resources.Reputation],
             },
             mat = new
