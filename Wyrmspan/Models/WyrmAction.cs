@@ -1,5 +1,5 @@
 public class WyrmAction: IComparable<WyrmAction> {
-    int id;
+    public int Id { get; set; }
     int activator; // 0 = immediate, 1 = explore, 2 = game end
     int maxUses;
     int oppUses;
@@ -16,7 +16,7 @@ public class WyrmAction: IComparable<WyrmAction> {
     }
 
     public WyrmAction(int id, int activator, int maxUses, int oppUses, int gains, int losses, bool payChoice, bool gainChoice, String desc) {
-        this.id = id;
+        this.Id = id;
         this.activator = activator;
         this.maxUses = maxUses;
         this.oppUses = oppUses;
@@ -26,6 +26,8 @@ public class WyrmAction: IComparable<WyrmAction> {
         this.gainChoice = gainChoice;
         this.description = desc;
     }
+
+    public WyrmAction() { }
 
     /*
     Converts a base 10 number into how many of each resource can be gained. Optionally, pass in true to do losses instead.
@@ -130,7 +132,7 @@ public class WyrmAction: IComparable<WyrmAction> {
         if (other == null) {
             return 0;
         } else {
-            return this.id - other.id;
+            return this.Id - other.Id;
         }
     }
 }
