@@ -19,9 +19,9 @@ public class GameController : Controller {
     }
 
     // 
-    // GET: /Game/Initialize/
+    // GET: /Game/GetBoard/
     [HttpGet]
-    public IActionResult Initialize() {
+    public IActionResult GetBoard() {
         try {
             ApiResponse response = GameRunner.mainGame.apiGetBoard();
             IActionResult output = serializeResponse(response);

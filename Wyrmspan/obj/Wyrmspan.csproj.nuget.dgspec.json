@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj": {}
+    "C:\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj": {}
   },
   "projects": {
-    "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj": {
+    "C:\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj",
+        "projectUniqueName": "C:\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj",
         "projectName": "Wyrmspan",
-        "projectPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\Wyrmspan.csproj",
-        "packagesPath": "C:\\Users\\zoeka\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\wyrmspan\\obj\\",
+        "projectPath": "C:\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\Wyrmspan.csproj",
+        "packagesPath": "C:\\Users\\simon\\.nuget\\packages\\",
+        "outputPath": "C:\\Documents\\GitHub\\Wyrmspan\\Wyrmspan\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\zoeka\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\simon\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
@@ -43,6 +43,12 @@
       "frameworks": {
         "net10.0": {
           "targetAlias": "net10.0",
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "[10.0.6, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
