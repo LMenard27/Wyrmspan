@@ -1,2 +1,9 @@
 Wyrmspan\obj
+obj
+Wyrmspan\obj\*
 Wyrmspan\bin
+Wyrmspan\obj\Debug
+Wyrmspan\obj\Debug\*
+WyrmspanTests\bin
+WyrmspanTests\obj
+bin
