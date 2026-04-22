@@ -5,7 +5,7 @@
 
 <style>
     body {
-        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
     }
 
     .top-bar {
@@ -41,12 +41,12 @@
         background-position: center;
     }
     .shop {
-        height: 385px;
+        width: 18vw;
+        height: 440px;
+        min-width: 400px;
         border: 2px solid #382316;
         border-radius: 6px;
-        margin: 20px 20px;
-        padding: 10px;
-        position: relative;
+        margin: 5px;
         background-color: rgb(199, 239, 239);
         background:
             linear-gradient(rgba(199,239,239,0.6),rgba(199,239,239,0.6)),
@@ -54,18 +54,23 @@
         background-size: cover;
         background-repeat: no-repeat;
         background-position: center;
-        right: -13.5%;
     }
 
     .cavern-slot {
-        width: 250px;
-        height: 150px;
+        width: 24.2%;
+        height: 100%;
         background: rgba(121, 166, 166, 0.75);
         border: 2px solid rgb(0, 54, 54);
         border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
+        flex-shrink: 0;
+        transition: transform 0.2s ease;
+    }
+    .card-slot:hover{
+        transform: scale(1.3);
+        z-index: 10;
     }
 
     .cavern-card {
@@ -73,10 +78,9 @@
         height: 100%;
     }
     .cavern-container {
-        position: absolute;
-        top: 10px;
+        height: 100%;
+        margin: 13px;
         left: 10%;
-        transform: translateX((-25%));
         display: flex;
         flex-direction: column;
         gap: 10px;
@@ -85,8 +89,12 @@
     .cards-container{
          display: flex;
          flex-direction: row;
+         justify-content: space-between;
+         width: 100%;
     }
     .cavern-row {
+        width: 100%;
+        height: 30%;
         display: flex;
         gap: 10px;
     }
@@ -108,17 +116,25 @@
 
     .card-row {
         display: flex;
-        gap: 10px;
+        gap: 5px;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: flex-start;
     }
 
     .card-slot {
-        width: 100px;
-        height: 140px;
+        width: 10.8vw;
+        height: 15.6vw;
+        max-width: 120px;
+        max-height: 168px;
+        min-width: 84px;
+        min-height: 120px;
         display: flex;
         align-items: center;
         justify-content: center;
         background: rgb(238, 233, 224);
         border-radius: 6px;
+        flex-shrink:  0;
     }
 
     .card {
@@ -135,14 +151,17 @@
         padding: 10px;
     }
     .card img {
-        max-height: 75%;
-        width: auto;
+        width: 100%;
+        height: auto;
+        max-height: 65%;
         object-fit: contain;
+        display: block;
     }
     .card-text {
-        font-size: 12px;
+        font-size: clamp(8px,1.2vw,12px);
+        text-align: center;
+        line-height: 1.5;
         font-weight: bold;
-        margin-top: 2px;
         color: #333;
     }
 </style>
@@ -151,29 +170,15 @@
     <h1 class="display-4">Wyrmspan</h1>
     <button id="initBtn">Initialize Game Board</button>
 
-    <script>
-        document.getElementById("initBtn").addEventListener("click", function () {
-            fetch("http://localhost:5012/Game/Initialize", {
-                method: "GET"
-            })
-            .then(response => response.text())
-            .then(data => {
-                console.log(data);
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
-        });
-    </script>
-
 <!-- 🔝 RESOURCE BAR -->
 <div class="top-bar">
-    <div class="resource">Coins:</div>
-    <div class="resource">Meat:</div>
-    <div class="resource">Gold:</div>
-    <div class="resource">Amethyst:</div>
-    <div class="resource">Milk:</div>
-    <div class="resource">Eggs:</div>
+    <div class="resource", id="coinCounter">Coins:</div>
+    <div class="resource", id="meatCounter">Meat:</div>
+    <div class="resource", id="goldCounter">Gold:</div>
+    <div class="resource", id="amethystCounter">Amethyst:</div>
+    <div class="resource", id="milkCounter">Milk:</div>
+    <div class="resource", id="eggCounter">Eggs:</div>
+    <div class= "resource", id="reputationCounter">Reputation:</div>
 
     <!-- Example action buttons -->
     <form method="post" asp-action="Excavate">
@@ -214,22 +219,31 @@
                 @for (int i = 0; i < 7; i++)
                 {
                     <div class="card-slot">
-                        @if (i < 3) 
-                        {
-                            <div class="card">
-                                @if(i == 0) {
+                        <div class="card">
+                            <div class="card-text", name="dragonName">QueztalCoatl</div>
+                            @if(i == 0) {
                                     <img src = "/images/quetzacoatlColour.PNG" alt = "Red, yellow, green Quetzacoatl Dragon" />
                                 }
-                                @if(i == 1) {
+                            @if(i == 1) {
                                     <img src = "/images/blueDragon.PNG" alt = "Blue eastern dragon" />
                                 }
-                                @if(i == 2) {
+                            @if(i == 2) {
                                     <img src = "/images/redDragon.PNG" alt = "Red and yellow eastern dragon" />
                                 }
-                                <div class="card-text">QueztalCoatl</div>
-                                <div class="card-text">Description</div>
-                            </div>
-                        }
+                            @if(i==3){
+                                    <img src = "/images/greenDragon.PNG" alt = "Green eastern dragon" />
+                                }
+                            @if(i==4){
+                                    <img src = "/images/invertedDragon.PNG" alt = "Black eastern dragon" />
+                                }
+                            @if(i==5){
+                                    <img src = "/images/marbelDragon.PNG" alt = "Marbel patterned eastern dragon" />
+                                }
+                            @if(i==6){
+                                <img src = "/images/quetzacoatlColour.PNG" alt = "Origami dragon" />
+                            }
+                            <div class="card-text", name="dragonDesc">Description</div>
+                        </div>
                     </div>
                 }
             </div>
@@ -242,19 +256,15 @@
                 @for (int i = 0; i < 7; i++)
                 {
                     <div class="card-slot">
-                        @if (i < 3)
-                        {
-                            <div class="card">
-                                @if(i==0){
+                        <div class="card">
+                            @if(i==0 || i==2 || i==4 || i==6){
                                     <img src = "/images/caveCentral.PNG" alt= "Cave"/>
                                 }
-                                @if(i==1){
+                            @if(i==1 || i ==3 || i==5 ){
                                     <img src = "/images/caveCorner.PNG" alt="Cave"/>
                                 }
-                                <div class = "card-text">Cave</div>
-                                <div class="card-text">Description</div>
-                            </div>
-                        }
+                            <div class="card-text", name="caveDesc">Description</div>
+                        </div>
                     </div>
                 }
             </div>
@@ -268,22 +278,19 @@
                     @for (int i = 0; i < 3; i++)
                     {
                         <div class="card-slot">
-                            @if (i < 3) 
-                            {
-                                <div class="card">
-                                    @if(i == 0) {
+                            <div class="card">
+                                <div class="card-text", name="shopDragonName">QueztalCoatl</div>
+                                @if(i == 0) {
                                         <img src = "/images/quetzacoatlColour.PNG" alt = "Red, yellow, green Quetzacoatl Dragon" />
                                     }
-                                    @if(i == 1) {
+                                @if(i == 1) {
                                         <img src = "/images/blueDragon.PNG" alt = "Blue eastern dragon" />
                                     }
-                                    @if(i == 2) {
+                                @if(i == 2) {
                                         <img src = "/images/redDragon.PNG" alt = "Red and yellow eastern dragon" />
                                     }
-                                    <div class="card-text">QueztalCoatl</div>
-                                    <div class="card-text">Description</div>
-                                </div>
-                            }
+                                <div class="card-text", name="shopDragonDesc">Description</div>
+                            </div>
                         </div>
                     }
                 </div>
@@ -295,13 +302,12 @@
                             @if (i < 3)
                             {
                                 <div class="card">
-                                    @if(i==0){
+                                    @if(i==0 || i==2){
                                         <img src = "/images/caveCentral.PNG" alt= "Cave"/>
                                     }
                                     @if(i==1){
                                         <img src = "/images/caveCorner.PNG" alt="Cave"/>
                                     }
-                                    <div class = "card-text">Cave</div>
                                     <div class="card-text">Description</div>
                                 </div>
                             }
