@@ -32,9 +32,17 @@ public class GameBoard {
             caveDeck.Push(c);
         }
 
-        this.shuffleCaves();
-        this.shuffleDragons();
+        ShuffleStack(this.dragonDeck);
+        ShuffleStack(this.caveDeck);
 
+    }
+
+    public void shuffleDragons() {
+        ShuffleStack(this.dragonDeck);
+    }
+
+    public void shuffleCaves() {
+        ShuffleStack(this.caveDeck);
     }
 
     public Resources[] getRewards() {
@@ -86,17 +94,27 @@ public class GameBoard {
     }
 
     /*
-    Shuffles the Dragon deck
+    Shuffles a deck
     */
-    public void shuffleDragons() {
-        this.dragonDeck.Shuffle();
-    }
+    public static void ShuffleStack<T>(Stack<T> stack)
+    {
+        var list = stack.ToList();
 
-    /*
-    Shuffles the Cave deck
-    */
-    public void shuffleCaves() {
-        this.caveDeck.Shuffle();
+        var r = new Random();
+
+        for (int i = list.Count - 1; i > 0; i--)
+        {
+            int j = r.Next(i + 1);
+
+            (list[i], list[j]) = (list[j], list[i]);
+        }
+
+        stack.Clear();
+
+        foreach (var item in list)
+        {
+            stack.Push(item);
+        }
     }
 
     /*

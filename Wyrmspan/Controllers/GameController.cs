@@ -39,7 +39,7 @@ public class GameController : Controller {
     [HttpPost]
     public IActionResult ChooseResourceToGain(int player, string resource) {
         try {
-            Enum.TryParse<Resources>(resource, true, out var r);
+            Resources r = (Resources)Enum.Parse(typeof(Resources), resource, true);
             ApiResponse response = GameRunner.mainGame.apiPlayerChooseResourceToGain(player, r);
             IActionResult output = serializeResponse(response);
             return output;
@@ -72,7 +72,7 @@ public class GameController : Controller {
     [HttpPost]
     public IActionResult ChooseResourceToDiscard(int player, string resource) {
         try {
-            Enum.TryParse<Resources>(resource, true, out var r);
+            Resources r = (Resources)Enum.Parse(typeof(Resources), resource, true);
             ApiResponse response = GameRunner.mainGame.apiPlayerChooseResourceToDiscard(player, r);
             IActionResult output = serializeResponse(response);
             return output;
@@ -322,6 +322,7 @@ public class GameController : Controller {
                 amethyst = gsf.getAllowedResources()[Resources.Amethyst],
                 milk = gsf.getAllowedResources()[Resources.Milk],
                 reputation = gsf.getAllowedResources()[Resources.Reputation],
+                eggs = gsf.getAllowedResources()[Resources.Eggs],
             }
         };
 

@@ -1,31 +1,225 @@
-html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
-  margin-bottom: 60px;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.top-bar {
+    display: flex;
+    gap: 20px;
+    padding: 10px;
+    background: rgb(214, 240, 240);
+    border: 2px solid #382316;
+    border-radius: 6px;
+    box-shadow: 1px 1px 2px rgb(174, 178, 178);
+    flex-wrap: wrap;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.resource {
+    padding: 5px 10px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: inset 1px 1px 2px rgb(174, 178, 178);
+}
+
+.board {
+    height: 500px;
+    border: 3px solid #382316;
+    border-radius: 6px;
+    margin: 20px 0;
+    position: relative;
+    background-color: rgb(199, 239, 239);
+    background:
+        linear-gradient(rgba(199,239,239,0.6),rgba(199,239,239,0.6)),
+        url('/images/map.PNG');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.shop {
+    width: 18vw;
+    height: 440px;
+    min-width: 400px;
+    border: 2px solid #382316;
+    border-radius: 6px;
+    margin: 5px;
+    background-color: rgb(199, 239, 239);
+    background:
+        linear-gradient(rgba(199,239,239,0.6),rgba(199,239,239,0.6)),
+        url('/images/map.PNG');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.cavern-slot {
+    width: 24.2%;
+    height: 100%;
+    background: rgba(121, 166, 166, 0.75);
+    border: 2px solid rgb(0, 54, 54);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+.cavern-slot img {
+    height: 50%;
+}
+.card-slot:hover{
+    transform: scale(1.3);
+    z-index: 10;
+}
+
+.cavern-card {
+    width: 100%;
+    height: 100%;
+}
+.cavern-container {
+    height: 100%;
+    margin: 13px;
+    left: 10%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+.cards-container{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+}
+.cavern-row {
+    width: 100%;
+    height: 30%;
+    display: flex;
+    gap: 10px;
+}
+
+.action-button {
+    margin: 5px;
+    background: teal;
+    color: white;
+    border: 2px solid rgb(0, 54, 54);
+    cursor: pointer;
+}
+
+.skip-button {
+    margin: 5px;
+    background: rgb(134, 134, 134);
+    color: white;
+    border: 2px solid rgb(51, 51, 51);
+    cursor: pointer;
+}
+
+.cancel-button {
+    margin: 5px;
+    background: rgb(128, 0, 0);
+    color: white;
+    border: 2px solid rgb(54, 0, 0);
+    cursor: pointer;
+}
+
+.hand {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.card-row {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.card-slot {
+    width: 10.8vw;
+    height: 15.6vw;
+    max-width: 120px;
+    max-height: 168px;
+    min-width: 84px;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgb(238, 233, 224);
+    border-radius: 6px;
+    flex-shrink:  0;
+}
+
+.card {
+    border: 1px solid rgb(186, 195, 195);
+    background: white;
+    box-shadow: 1px 1px 2px rgb(174, 178, 178);
+    padding: 2px;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+.card img {
+    width: 100%;
+    height: auto;
+    max-height: 50%;
+    object-fit: contain;
+    display: block;
+}
+.card-text {
+    font-size: clamp(7px,1.2vw,12px);
+    text-align: center;
+    line-height: 1.5;
+    font-weight: 400;
+    color: #333;
+}
+.cost-text {
+    font-size: clamp(7px,1.2vw,12px);
+    text-align: center;
+    line-height: 1.5;
+    font-weight: 400;
+    color: #333;
+}
+
+/* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+/* Modal Content/Box */
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% from the top and centered */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 50%; /* Could be more or less, depending on screen size */
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+#rulesBtn {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 9000;
+
+    padding: 8px 12px;
+    background: teal;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
 }
