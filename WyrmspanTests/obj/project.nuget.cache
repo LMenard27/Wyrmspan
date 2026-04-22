@@ -1,6 +1,10 @@
 {
   "version": 2,
+<<<<<<< Updated upstream
   "dgSpecHash": "WPYhltcgFDI=",
+=======
+  "dgSpecHash": "2mm0RBYwIBw=",
+>>>>>>> Stashed changes
   "success": true,
   "projectFilePath": "C:\\Users\\zoeka\\OneDrive\\Documents\\Wyrmspan\\WyrmspanTests\\WyrmspanTests.csproj",
   "expectedPackageFiles": [

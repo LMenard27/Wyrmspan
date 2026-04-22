@@ -13,7 +13,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Wyrmspan")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
+<<<<<<< Updated upstream
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+48e23f9ffe97fb252c2eb33df539bf14a451b2fb")]
+=======
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ae6680ceb2b6ee6d3e2148eb3da97411361423e9")]
+>>>>>>> Stashed changes
 [assembly: System.Reflection.AssemblyProductAttribute("Wyrmspan")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Wyrmspan")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
