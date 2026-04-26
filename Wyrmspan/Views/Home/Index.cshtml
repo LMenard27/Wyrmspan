@@ -32,6 +32,13 @@
 <div class="board">
     <div class ="cavern-container">
         @for (int i =0; i<3; i++){
+            @if(i==0){
+                <div class="cavern-text" >Crimson Cavern</div>
+            } else if (i == 1){
+                <div class="cavern-text" >Golden Grotto</div>
+            } else {
+                <div class="cavern-text">Amethyst Abyss</div>
+            }
             <div class ="cavern-row">
             @for (int j=0; j < 4; j++){
                 <div class="cavern-slot", id="@($"cavern-slot-{i}-{j}")">
