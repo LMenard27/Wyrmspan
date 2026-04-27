@@ -836,7 +836,7 @@ function displayBoardInfo(data) {
             try {
                 document.getElementById("cavern-slot-"+cavern+"-"+column).innerHTML = `
                     <img src = "/images/caveCorner.png" alt= "Cave"/>
-                    <div class="card-text">${data.players[statePlayer].mat.caverns[cavern].caves[column].action.description}</div>
+                    <div class="cavern-slot-text">${data.players[statePlayer].mat.caverns[cavern].caves[column].action.description}</div>
                 `;
             } catch {
                 document.getElementById("cavern-slot-"+cavern+"-"+column).innerHTML = "";
