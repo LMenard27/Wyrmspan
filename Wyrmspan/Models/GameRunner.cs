@@ -1,3 +1,6 @@
+using System.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+
 public class GameRunner {
     // CONSTANTS
     
@@ -17,8 +20,9 @@ public class GameRunner {
     bool[] passedPlayers;
     int prevStatePlayer;
 
-    public GameRunner() {
+    int numTurns = 15;
 
+    public GameRunner() {
         // set up board
         this.board = new GameBoard();
         this.board.refreshShop();
@@ -32,25 +36,33 @@ public class GameRunner {
         ////////////////////////////////////////////////////////////////////////
         this.gameStack.Push(new GameStackFrame(States.END_GAME));              /////
         this.gameStack.Push(new GameStackFrame(States.END_ROUND));             /////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
+        for (int i=0; i<numTurns; i++){
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
+        }
         this.gameStack.Push(new GameStackFrame(States.END_ROUND));             /////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
+        for (int i=0; i<numTurns; i++){
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
+        }
         this.gameStack.Push(new GameStackFrame(States.END_ROUND));             /////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
+        for (int i=0; i<numTurns; i++){
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
+        }
         this.gameStack.Push(new GameStackFrame(States.END_ROUND));             /////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
-        this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
+        for (int i=0; i<numTurns; i++){
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 3));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 2));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 1));/////
+            this.gameStack.Push(new GameStackFrame(States.AWAIT_PLAYER_ACTION, 0));/////
+        }
         ////////////////////////////////////////////////////////////////////////
         
         this.TurnPlayer = 0; // always will start at player 0 regardless of how many players there are
@@ -116,6 +128,7 @@ public class GameRunner {
                 clearFrame(); // passed players continue getting passed
             }
         }
+        rotatePlayer();
     }
 
     /*
@@ -295,10 +308,14 @@ public class GameRunner {
         if (this.board.peekDragonDeck() == d) {
             isAvailable = true;
         }
+        int shopIndex = -1;
+        int temp = 0;
         foreach (Dragon i in this.board.peekDragonShop()) {
             if (i == d) {
                 isAvailable = true;
+                shopIndex = temp;
             }
+            temp += 1;
         }
         if (!isAvailable) {
             // This has a security vulnerability: a bad actor may poll every card in existence to see if it is not at the top,
@@ -308,7 +325,7 @@ public class GameRunner {
         }
 
         // All is good, give the dragon to player
-        this.players[p].addDragonToHand(d);
+        this.players[p].addDragonToHand(board.pickDragonFromShop(shopIndex));
 
         // Pop the stack to clear the frame
         this.clearFrame();
@@ -552,10 +569,18 @@ public class GameRunner {
             for (int j = 0; j < action.numCost; j++) {
                 GameStackFrame frame = new GameStackFrame();
                 // Set every resource to what it is, and allow dragons and caves only if they are allowed
-                if (action.serializeResources(true)["Dragons"] || action.serializeResources(true)["Caves"]) {
-                    frame.setState(States.AWAIT_DISCARD_BENEFIT);
-                } else {
-                    frame.setState(States.AWAIT_DISCARD_RESOURCE);
+                if (action.serializeResources(true)["Dragons"]) {
+                    Console.Write("dragon set able to discard");
+                    frame.setState(States.AWAIT_GET_DRAGON);
+                    frame.setCanChooseDragon(true);
+                }
+                if (action.serializeResources(true)["Caves"]) {
+                    Console.Write("cave set able to discard");
+                    frame.setState(States.AWAIT_GET_CAVE);
+                    frame.setCanChooseCave(true);
+                }
+                if (!action.serializeResources(true)["Caves"] && !action.serializeResources(true)["Dragons"]) {
+                    frame.setState(States.AWAIT_GET_RESOURCE);
                 }
                 frame.setAllowedResource(Resources.Coins, action.serializeResources(true)["Coins"]);
                 frame.setAllowedResource(Resources.Meat, action.serializeResources(true)["Meat"]);
@@ -569,13 +594,24 @@ public class GameRunner {
                 this.gameStack.Push(frame);
             }
 
+
             // gains
             for (int j = 0; j < action.numReward; j++) {
                 GameStackFrame frame = new GameStackFrame();
                 // Set every resource to what it is, and allow dragons and caves only if they are allowed
-                if (action.serializeResources(true)["Dragons"] || action.serializeResources(true)["Caves"]) {
+                if (action.serializeResources()["Dragons"]) {
+                    Console.Write("dragon set able to choose\n");
                     frame.setState(States.AWAIT_GAIN_BENEFIT);
-                } else {
+                    frame.setCanChooseDragon(true);
+                    Console.Write("can choose dragon: " + frame.getCanChooseDragon() + "\n");
+                }
+                if (action.serializeResources()["Caves"]) {
+                    Console.Write("cave set able to choose\n");
+                    frame.setState(States.AWAIT_GAIN_BENEFIT);
+                    frame.setCanChooseCave(true);
+                    Console.Write("can choose cave: " + frame.getCanChooseCave() + "\n");
+                }
+                if (!action.serializeResources()["Caves"] && !action.serializeResources()["Dragons"]) {
                     frame.setState(States.AWAIT_GET_RESOURCE);
                 }
                 frame.setAllowedResource(Resources.Coins, action.serializeResources()["Coins"]);
@@ -591,22 +627,31 @@ public class GameRunner {
             }
         }
 
+
         // Opponent math
+
 
         for (int p = 0; p < NUM_PLAYERS; p++) {
             if (p == player) {
                 continue;
             }
 
+
             for (int i = 0; i < action.oppUses; i++) {
                 // losses
                 for (int j = 0; j < action.numCost; j++) {
                     GameStackFrame frame = new GameStackFrame();
                     // Set every resource to what it is, and allow dragons and caves only if they are allowed
-                    if (action.serializeResources(true)["Dragons"] || action.serializeResources(true)["Caves"]) {
-                        frame.setState(States.AWAIT_DISCARD_BENEFIT);
-                    } else {
-                        frame.setState(States.AWAIT_DISCARD_RESOURCE);
+                    if (action.serializeResources(true)["Dragons"]) {
+                    frame.setState(States.AWAIT_GAIN_BENEFIT);
+                    frame.setCanChooseDragon(true);
+                    }
+                    if (action.serializeResources(true)["Caves"]) {
+                        frame.setState(States.AWAIT_GAIN_BENEFIT);
+                        frame.setCanChooseCave(true);
+                    }
+                    if (!action.serializeResources(true)["Caves"] && !action.serializeResources(true)["Dragons"]) {
+                        frame.setState(States.AWAIT_GET_RESOURCE);
                     }
                     frame.setAllowedResource(Resources.Coins, action.serializeResources(true)["Coins"]);
                     frame.setAllowedResource(Resources.Meat, action.serializeResources(true)["Meat"]);
@@ -617,18 +662,26 @@ public class GameRunner {
                     frame.setAllowedResource(Resources.Milk, action.serializeResources(true)["Milk"]);
                     frame.setPlayer(p);
 
+
                     this.gameStack.Push(frame);
                 }
+
 
                 // gains
                 for (int j = 0; j < action.numReward; j++) {
                     GameStackFrame frame = new GameStackFrame();
                     // Set every resource to what it is, and allow dragons and caves only if they are allowed
-                    if (action.serializeResources(true)["Dragons"] || action.serializeResources(true)["Caves"]) {
+                    if (action.serializeResources()["Dragons"]) {
+                        
                         frame.setState(States.AWAIT_GAIN_BENEFIT);
-                    } else {
-                        frame.setState(States.AWAIT_GET_RESOURCE);
+                        frame.setCanChooseDragon(true);
                     }
+                    if (action.serializeResources()["Caves"]) {
+                        frame.setState(States.AWAIT_GAIN_BENEFIT);
+                        frame.setCanChooseCave(true);
+                    }
+                    if (!action.serializeResources()["Caves"] && !action.serializeResources()["Dragons"]) {
+                        frame.setState(States.AWAIT_GET_RESOURCE);
                     frame.setAllowedResource(Resources.Coins, action.serializeResources()["Coins"]);
                     frame.setAllowedResource(Resources.Meat, action.serializeResources()["Meat"]);
                     frame.setAllowedResource(Resources.Gold, action.serializeResources()["Gold"]);
@@ -643,6 +696,8 @@ public class GameRunner {
             }
         }
     }
+   }
+
 
     /*
     Called when a player explores a cave

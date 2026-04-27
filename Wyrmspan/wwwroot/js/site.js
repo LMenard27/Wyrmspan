@@ -17,8 +17,9 @@ var twoModalClose = document.getElementById("twoModalClose");
 exploreBtn.onclick = handleExploreBtn;
 excavateBtn.onclick = handleExcavateBtn;
 enticeBtn.onclick = handleEnticeBtn;
-universalSkipBtn.onClick = callSkipEndpoint;
+universalSkipBtn.onclick = callSkipEndpoint;
 
+setInterval(updateDisplay(), 1000);
 // When the user clicks on <span> (x), close the modal
 oneModalClose.onclick = function() {
         chooseOneModal.style.display = "none";
@@ -68,7 +69,8 @@ function routeOneModalSubmit() {
             callDiscardCaveEndpoint();
             break;
         case "AWAIT_GAIN_BENEFIT":
-            callGainResourceEndpoint();
+            console.log("await gain benefit");
+            callGainBenefitEndpoint();
             break;
         case "AWAIT_DISCARD_BENEFIT":
             callDiscardResourceEndpoint();
@@ -147,6 +149,92 @@ function callDiscardResourceEndpoint() {
     });
 }
 
+function callGainBenefitEndpoint(){
+    var selectedBenefit = document.querySelector("#oneModalDynamicContent select").value;
+    var [type, value] = selectedBenefit.split(":");
+    console.log("type of benefit: " + type);
+
+    if (type === "dragon") {
+        console.log("dragon endpoint called");
+        fetch("http://localhost:5012/Game/ChooseDragonToGain?player=" + statePlayer + "&id=" + value, {
+        method: "POST"
+        }).then(response => response.text()).then(data => {
+        console.log(JSON.parse(data));
+        displayBoardInfo(JSON.parse(data));
+        }).catch(error => {
+        console.error("Error:", error);
+        });
+        board = gameData.board;
+        for (i=0; i<board.dragonShop.length; i++) {
+            if(board.dragonShop[i].id == value){
+                gameData.board.pickDragonFromShop(i);
+                break;
+            }
+        }
+    } else if (type === "cave") {
+        fetch("http://localhost:5012/Game/ChooseCaveToGain?player=" + statePlayer + "&id=" + value, {
+        method: "POST"
+    }).then(response => response.text()).then(data => {
+        console.log(JSON.parse(data));
+        displayBoardInfo(JSON.parse(data));
+    }).catch(error => {
+        console.error("Error:", error);
+    });
+    } else {
+        fetch("http://localhost:5012/Game/ChooseResourceToGain?player=" + statePlayer + "&resource=" + value, {
+        method: "POST"
+    }).then(response => response.text()).then(data => {
+        console.log(JSON.parse(data));
+        displayBoardInfo(JSON.parse(data));
+    }).catch(error => {
+        console.error("Error:", error);
+    });
+    }
+}
+
+function callDiscardBenefitEndpoint(){
+    var selectedBenefit = document.querySelector("#oneModalDynamicContent select").value;
+    var [type, value] = selectedBenefit.split(":");
+    console.log("type of benefit: " + type);
+
+    if (type === "dragon") {
+        console.log("dragon endpoint called");
+        fetch("http://localhost:5012/Game/ChooseDragonToDiscard?player=" + statePlayer + "&id=" + value, {
+        method: "POST"
+        }).then(response => response.text()).then(data => {
+        console.log(JSON.parse(data));
+        displayBoardInfo(JSON.parse(data));
+        }).catch(error => {
+        console.error("Error:", error);
+        });
+        board = gameData.board;
+        for (i=0; i<board.dragonShop.length; i++) {
+            if(board.dragonShop[i].id == value){
+                gameData.board.pickDragonFromShop(i);
+                break;
+            }
+        }
+    } else if (type === "cave") {
+        fetch("http://localhost:5012/Game/ChooseCaveToDiscard?player=" + statePlayer + "&id=" + value, {
+        method: "POST"
+    }).then(response => response.text()).then(data => {
+        console.log(JSON.parse(data));
+        displayBoardInfo(JSON.parse(data));
+    }).catch(error => {
+        console.error("Error:", error);
+    });
+    } else {
+        fetch("http://localhost:5012/Game/ChooseResourceToDiscard?player=" + statePlayer + "&resource=" + value, {
+        method: "POST"
+    }).then(response => response.text()).then(data => {
+        console.log(JSON.parse(data));
+        displayBoardInfo(JSON.parse(data));
+    }).catch(error => {
+        console.error("Error:", error);
+    });
+    }
+}
+
 function callGainDragonEndpoint() {
     var selectedDragon = document.querySelector("#oneModalDynamicContent select").value;
 
@@ -180,7 +268,7 @@ function callDiscardDragonEndpoint() {
 }
 
 function callSkipEndpoint() {
-    fetch("http://localhost:5012/Game/PlayerSkip&player=" + statePlayer, {
+    fetch("http://localhost:5012/Game/PlayerSkip?player=" + statePlayer, {
         method: "POST"
     })
     .then(response => response.text())
@@ -405,7 +493,7 @@ function handleGainDragon() {
     container.appendChild(dropdown);
 }
 
-function handleDiscardResource(resources) {
+function handleDiscardResource() {
     chooseOneModal.style.display = "block";
     var oneModalSubmit = document.getElementById("oneModalSubmit");
     oneModalSubmit.onclick = routeOneModalSubmit;
@@ -431,13 +519,27 @@ function handleDiscardResource(resources) {
     var dropdown = document.createElement("select");
     var addedAny = false;
 
-    Object.keys(resources).forEach(key => {
-    if (resources[key] === true) {
+    Object.keys(gameData.game_stack_frame.resources).forEach(key => {
+    if (gameData.game_stack_frame.resources[key] === true) {
 
         var option = document.createElement("option");
 
         // Capitalize first letter
         var formatted = key.charAt(0).toUpperCase() + key.slice(1);
+
+        if (key.valueOf() == "meat"){
+            formatted += " 🍖"
+        } else if (key.valueOf() == "amethyst") {
+            formatted += " 🌑"
+        } else if (key.valueOf() == "gold") {
+            formatted += " ⚜️"
+        } else if (key.valueOf() == "milk") {
+            formatted += " 🥛"
+        } else if (key.valueOf() == "eggs") {
+            formatted += " 🥚"
+        } else if (key.valueOf() == "coins") {
+            formatted += " 💰"
+        }
 
         option.value = key;
         option.textContent = formatted;
@@ -457,7 +559,145 @@ function handleDiscardResource(resources) {
     container.appendChild(dropdown);
 }
 
-function handleGainResource(resources) {
+function handleGainBenefit() {
+    console.log("benefit gained");
+    chooseOneModal.style.display = "block";
+    var oneModalSubmit = document.getElementById("oneModalSubmit");
+    oneModalSubmit.onclick = routeOneModalSubmit;
+
+    var skipBtn = document.getElementById("oneModalSkip");
+    skipBtn.disabled = false;
+    skipBtn.onclick = callSkipEndpoint;
+    var cancelBtn = document.getElementById("oneModalClose");
+    cancelBtn.disabled = true;
+
+    var text = document.getElementById("oneModalDynamicText");
+
+    text.innerHTML = `
+    <b>${statePlayerName}:</b>
+    <b>Select a benefit to gain!</b>`;
+
+    var container = document.getElementById("oneModalDynamicContent");
+
+    // Clear previous content
+    container.innerHTML = "";
+
+    // Create dropdown
+    var dropdown = document.createElement("select");
+    var addedAny = false;
+
+    Object.keys(gameData.game_stack_frame.resources).forEach(key => {
+    if (gameData.game_stack_frame.resources[key] === true) {
+
+        var option = document.createElement("option");
+
+        // Capitalize first letter
+        var formatted = key.charAt(0).toUpperCase() + key.slice(1);
+
+        option.value = "resource:" + key;
+        option.textContent = formatted;
+
+        dropdown.appendChild(option);
+        addedAny = true;
+    }
+    });
+    if(gameData.game_stack_frame.canChooseDragon){
+        console.log("dragon choosable when gaining benefit");
+        gameData.board.dragonShop.forEach(dragon => {
+        var option = document.createElement("option"); 
+
+        option.value = "dragon:" + dragon.id;      // useful for later lookup
+        option.textContent = dragon.name;
+
+        dropdown.appendChild(option);
+    });
+    }
+
+    if(gameData.game_stack_frame.canChooseCave){
+        console.log("cave choosable when gaining benefit");
+        gameData.board.caveShop.forEach(cave => {
+        var option = document.createElement("option");
+
+        option.value = "cave:" + cave.id;      // useful for later lookup
+        option.textContent = cave.action.description;
+
+        dropdown.appendChild(option);
+    });
+    }
+
+    container.appendChild(dropdown);
+}
+
+function handleDiscardBenefit() {
+    console.log("benefit gained");
+    chooseOneModal.style.display = "block";
+    var oneModalSubmit = document.getElementById("oneModalSubmit");
+    oneModalSubmit.onclick = routeOneModalSubmit;
+
+    var skipBtn = document.getElementById("oneModalSkip");
+    skipBtn.disabled = false;
+    skipBtn.onclick = callSkipEndpoint;
+    var cancelBtn = document.getElementById("oneModalClose");
+    cancelBtn.disabled = true;
+
+    var text = document.getElementById("oneModalDynamicText");
+
+    text.innerHTML = `
+    <b>${statePlayerName}:</b>
+    <b>Select a benefit to gain!</b>`;
+
+    var container = document.getElementById("oneModalDynamicContent");
+
+    // Clear previous content
+    container.innerHTML = "";
+
+    // Create dropdown
+    var dropdown = document.createElement("select");
+    var addedAny = false;
+
+    Object.keys(gameData.game_stack_frame.resources).forEach(key => {
+    if (gameData.game_stack_frame.resources[key] === true) {
+
+        var option = document.createElement("option");
+
+        // Capitalize first letter
+        var formatted = key.charAt(0).toUpperCase() + key.slice(1);
+
+        option.value = "resource:" + key;
+        option.textContent = formatted;
+
+        dropdown.appendChild(option);
+        addedAny = true;
+    }
+    });
+    if(gameData.game_stack_frame.canChooseDragon){
+        console.log("dragon choosable when gaining benefit");
+        gameData.board.dragonShop.forEach(dragon => {
+        var option = document.createElement("option"); 
+
+        option.value = "dragon:" + dragon.id;      // useful for later lookup
+        option.textContent = dragon.name;
+
+        dropdown.appendChild(option);
+    });
+    }
+
+    if(gameData.game_stack_frame.canChooseCave){
+        console.log("cave choosable when gaining benefit");
+        gameData.board.caveShop.forEach(cave => {
+        var option = document.createElement("option");
+
+        option.value = "cave:" + cave.id;      // useful for later lookup
+        option.textContent = cave.action.description;
+
+        dropdown.appendChild(option);
+    });
+    }
+
+    container.appendChild(dropdown);
+}
+
+function handleGainResource() {
     chooseOneModal.style.display = "block";
     var oneModalSubmit = document.getElementById("oneModalSubmit");
     oneModalSubmit.onclick = routeOneModalSubmit;
@@ -482,13 +722,27 @@ function handleGainResource(resources) {
     var dropdown = document.createElement("select");
     var addedAny = false;
 
-    Object.keys(resources).forEach(key => {
-    if (resources[key] === true) {
+    Object.keys(gameData.game_stack_frame.resources).forEach(key => {
+    if (gameData.game_stack_frame.resources[key] === true) {
 
         var option = document.createElement("option");
 
         // Capitalize first letter
         var formatted = key.charAt(0).toUpperCase() + key.slice(1);
+
+        if (key.valueOf() == "meat"){
+            formatted += " 🍖"
+        } else if (key.valueOf() == "amethyst") {
+            formatted += " 🌑"
+        } else if (key.valueOf() == "gold") {
+            formatted += " ⚜️"
+        } else if (key.valueOf() == "milk") {
+            formatted += " 🥛"
+        } else if (key.valueOf() == "eggs") {
+            formatted += " 🥚"
+        } else if (key.valueOf() == "coins") {
+            formatted += " 💰"
+        }
 
         option.value = key;
         option.textContent = formatted;
@@ -510,7 +764,7 @@ function handleGainResource(resources) {
 
 function handleExploreBtn() {
     if (currState != "AWAIT_PLAYER_ACTION") {
-        postDisplayUpdates(gameData);
+        postDisplayUpdates();
         return;
     }
     chooseOneModal.style.display = "block";
@@ -551,7 +805,7 @@ function handleExploreBtn() {
 
 function handleExcavateBtn() {
     if (currState != "AWAIT_PLAYER_ACTION") {
-        postDisplayUpdates(gameData);
+        postDisplayUpdates();
         return;
     }
     enticing = false;
@@ -604,7 +858,7 @@ function handleExcavateBtn() {
 
 function handleEnticeBtn() {
     if (currState != "AWAIT_PLAYER_ACTION") {
-        postDisplayUpdates(gameData);
+        postDisplayUpdates();
         return;
     }
     enticing = true;
@@ -655,13 +909,13 @@ function handleEnticeBtn() {
     container.appendChild(dropdown2);
 }
 
-function postDisplayUpdates(data) {
+function postDisplayUpdates() {
     switch(currState) {
         case "AWAIT_GET_RESOURCE":
-            handleGainResource(data.game_stack_frame.resources);
+            handleGainResource();
             break;
         case "AWAIT_DISCARD_RESSOURCE":
-            handleDiscardResource(data.game_stack_frame.resources);
+            handleDiscardResource();
             break;
         case "AWAIT_GET_DRAGON":
             handleGainDragon();
@@ -676,10 +930,10 @@ function postDisplayUpdates(data) {
             handleDiscardCave();
             break;
         case "AWAIT_GAIN_BENEFIT":
-            handleGainResource(data.game_stack_frame.resources);
+            handleGainBenefit();
             break;
         case "AWAIT_DISCARD_BENEFIT":
-            handleDiscardResource(data.game_stack_frame.resources);
+            handleDiscardBenefit();
             break;
         default:
             break;
@@ -725,8 +979,8 @@ function getCostEmoji(dragon) {
 
     add(dragon.coinCost, "💰");
     add(dragon.meatCost, "🍖");
-    add(dragon.goldCost, "🥇");
-    add(dragon.amethystCost, "🔮");
+    add(dragon.goldCost, "⚜️");
+    add(dragon.amethystCost, "🌑");
     add(dragon.milkCost, "🥛");
 
     return result || "Free";
@@ -859,5 +1113,5 @@ function displayBoardInfo(data) {
         }
     }
 
-    postDisplayUpdates(data);
+    postDisplayUpdates();
 }

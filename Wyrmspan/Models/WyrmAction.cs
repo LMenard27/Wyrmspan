@@ -43,7 +43,6 @@ public class WyrmAction: IComparable<WyrmAction> {
     Converts a base 10 number into whether each resource can be gained. Optionally, pass in true to do losses instead.
     */
     public Dictionary<string, bool> serializeResources(bool doLosses) {
-
         int workingInt = this.gains;
 
         if (doLosses) {

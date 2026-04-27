@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
+using System.Runtime.Versioning;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Xml.Schema;
@@ -323,7 +324,10 @@ public class GameController : Controller {
                 milk = gsf.getAllowedResources()[Resources.Milk],
                 reputation = gsf.getAllowedResources()[Resources.Reputation],
                 eggs = gsf.getAllowedResources()[Resources.Eggs],
-            }
+            },
+            canChooseDragon = gsf.getCanChooseDragon(),
+            canChooseCave = gsf.getCanChooseCave(),
+
         };
 
         return output;
