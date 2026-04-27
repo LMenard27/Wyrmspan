@@ -118,13 +118,24 @@ body {
     border: 2px solid rgb(51, 51, 51);
     cursor: pointer; /*Cursor appears as a pointer*/
 }
-
+/*When skip button is disabled change coloration and cursor to make unclickable and visualized.*/
+.skip-button:disabled {
+    background-color: #888;
+    color:#333;
+    cursor: not-allowed;
+}
 .cancel-button {
     margin: 5px;
     background: rgb(128, 0, 0);
     color: white;
     border: 2px solid rgb(54, 0, 0);
     cursor: pointer; /*Cursor appears as a pointer*/
+}
+/*When cancel button is disabled change coloration and cursor to make unclickable and visualized.*/
+.cancel-button:disabled {
+    background-color: #888;
+    color:#333;
+    cursor: not-allowed;
 }
 
 .hand {
