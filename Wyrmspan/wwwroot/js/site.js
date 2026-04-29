@@ -594,6 +594,20 @@ function handleGainBenefit() {
         // Capitalize first letter
         var formatted = key.charAt(0).toUpperCase() + key.slice(1);
 
+        if (key.valueOf() == "meat"){
+            formatted += " 🍖"
+        } else if (key.valueOf() == "amethyst") {
+            formatted += " 🌑"
+        } else if (key.valueOf() == "gold") {
+            formatted += " ⚜️"
+        } else if (key.valueOf() == "milk") {
+            formatted += " 🥛"
+        } else if (key.valueOf() == "eggs") {
+            formatted += " 🥚"
+        } else if (key.valueOf() == "coins") {
+            formatted += " 💰"
+        }
+        
         option.value = "resource:" + key;
         option.textContent = formatted;
 
