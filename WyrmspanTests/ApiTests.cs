@@ -2,6 +2,9 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 
+/*
+These tests require that a database be created and connected to before running the tests.
+*/
 public class ApiTests
 {
     [Fact]
@@ -189,7 +192,7 @@ public class ApiTests
 
         //Execute + Test
         try {
-            testGame.apiPlayerChooseDragonToGain(0, dragon4);
+            testGame.apiPlayerChooseDragonToGain(0, dragon4.Id);
         } catch (IllegalMoveException e)
         {
             Debug.Assert(false, "Drawing a dragon in the shop failed: " + e.Message);
@@ -231,7 +234,7 @@ public class ApiTests
 
         //Execute + Test
         try {
-            testGame.apiPlayerChooseDragonToGain(0, dragon1);
+            testGame.apiPlayerChooseDragonToGain(0, dragon1.Id);
         } catch (IllegalMoveException e)
         {
             Debug.Assert(false, "Drawing a dragon in the shop failed: " + e.Message);
@@ -274,7 +277,7 @@ public class ApiTests
 
         //Execute + Test
         try {
-            testGame.apiPlayerChooseDragonToGain(0, dragon5);
+            testGame.apiPlayerChooseDragonToGain(0, dragon5.Id);
         } catch (IllegalMoveException e)
         {
             Debug.Assert(true, "If this one fails, try shielding your computer from solar radiation, " + e.Message);
@@ -318,7 +321,7 @@ public class ApiTests
 
         //Execute + Test
         try {
-            testGame.apiPlayerChooseDragonToGain(1, dragon3);
+            testGame.apiPlayerChooseDragonToGain(1, dragon3.Id);
         } catch (IllegalMoveException e)
         {
             Debug.Assert(true, "If this one fails, try shielding your computer from solar radiation, " + e.Message);
@@ -360,7 +363,7 @@ public class ApiTests
 
         //Execute + Test
         try {
-            testGame.apiPlayerChooseDragonToGain(0, dragon3);
+            testGame.apiPlayerChooseDragonToGain(0, dragon3.Id);
         } catch (IllegalMoveException e)
         {
             Debug.Assert(true, "If this one fails, try shielding your computer from solar radiation, " + e.Message);
@@ -404,7 +407,7 @@ public class ApiTests
 
         //Execute + Test
         try {
-            testGame.apiPlayerChooseCaveToGain(0, cave3);
+            testGame.apiPlayerChooseCaveToGain(0, cave3.Id);
         } catch (IllegalMoveException e)
         {
             Debug.Assert(false, "Drawing a Cave in the shop failed: " + e.Message);
@@ -446,7 +449,7 @@ public class ApiTests
 
         //Execute + Test
         try {
-            testGame.apiPlayerChooseCaveToGain(0, cave4);
+            testGame.apiPlayerChooseCaveToGain(0, cave4.Id);
         } catch (IllegalMoveException e)
         {
             Debug.Assert(false, "Drawing a Cave from the top of the deck failed: " + e.Message);
@@ -489,7 +492,7 @@ public class ApiTests
 
         //Execute + Test
         try {
-            testGame.apiPlayerChooseCaveToGain(0, cave5);
+            testGame.apiPlayerChooseCaveToGain(0, cave5.Id);
         } catch (IllegalMoveException e)
         {
             Debug.Assert(true, "If this one fails, try shielding your computer from solar radiation, " + e.Message);
@@ -533,7 +536,7 @@ public class ApiTests
 
         //Execute + Test
         try {
-            testGame.apiPlayerChooseCaveToGain(1, cave3);
+            testGame.apiPlayerChooseCaveToGain(1, cave3.Id);
         } catch (IllegalMoveException e)
         {
             Debug.Assert(true, "If this one fails, try shielding your computer from solar radiation, " + e.Message);
@@ -578,7 +581,7 @@ public class ApiTests
 
         //Execute + Test
         try {
-            testGame.apiPlayerChooseCaveToGain(0, cave3);
+            testGame.apiPlayerChooseCaveToGain(0, cave3.Id);
         } catch (IllegalMoveException e)
         {
             Debug.Assert(true, "If this one fails, try shielding your computer from solar radiation, " + e.Message);

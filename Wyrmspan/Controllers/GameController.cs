@@ -4,6 +4,7 @@ using System.Runtime.Versioning;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Xml.Schema;
+using Microsoft.AspNetCore.SignalR;
 
 namespace MvcMovie.Controllers;
 
@@ -12,17 +13,25 @@ Routing is set in Program.cs
 */
 
 public class GameController : Controller {
+
+    private readonly IHubContext<DisplayHub> _hub;
+
+    public GameController(IHubContext<DisplayHub> hub)
+    {
+        _hub = hub;
+    }
+    
     // 
     // GET: /Game/
     [HttpGet]
-    public IActionResult Index() {
+    public async Task<IActionResult> Index() {
         return Ok(JsonSerializer.Serialize(DataCache.Actions.Select(serializeAction)));
     }
 
     // 
     // GET: /Game/GetBoard/
     [HttpGet]
-    public IActionResult GetBoard() {
+    public async Task<IActionResult> GetBoard() {
         try {
             ApiResponse response = GameRunner.mainGame.apiGetBoard();
             IActionResult output = serializeResponse(response);
@@ -36,13 +45,31 @@ public class GameController : Controller {
     }
 
     // 
+    // GET: /Game/GetBoard/Ping
+    [HttpPost]
+    public async Task<IActionResult> Ping() {
+        try {
+            ApiResponse response = GameRunner.mainGame.apiGetBoard();
+            IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
+            return output;
+        } catch (IllegalMoveException e) {
+            return BadRequest(new
+            {
+               message = e.Message
+            });
+        }
+    }
+
+    // 
     // POST: /Game/ChooseResourceToGain/
     [HttpPost]
-    public IActionResult ChooseResourceToGain(int player, string resource) {
+    public async Task<IActionResult> ChooseResourceToGain(int player, string resource) {
         try {
             Resources r = (Resources)Enum.Parse(typeof(Resources), resource, true);
             ApiResponse response = GameRunner.mainGame.apiPlayerChooseResourceToGain(player, r);
             IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
             return output;
         } catch (IllegalMoveException e) {
             return BadRequest(new
@@ -55,10 +82,11 @@ public class GameController : Controller {
     // 
     // POST: /Game/PlayerSkip/
     [HttpPost]
-    public IActionResult PlayerSkip(int player) {
+    public async Task<IActionResult> PlayerSkip(int player) {
         try {
             ApiResponse response = GameRunner.mainGame.apiPlayerSkipped(player);
             IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
             return output;
         } catch (IllegalMoveException e) {
             return BadRequest(new
@@ -71,11 +99,12 @@ public class GameController : Controller {
     // 
     // POST: /Game/ChooseResourceToDiscard/
     [HttpPost]
-    public IActionResult ChooseResourceToDiscard(int player, string resource) {
+    public async Task<IActionResult> ChooseResourceToDiscard(int player, string resource) {
         try {
             Resources r = (Resources)Enum.Parse(typeof(Resources), resource, true);
             ApiResponse response = GameRunner.mainGame.apiPlayerChooseResourceToDiscard(player, r);
             IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
             return output;
         } catch (IllegalMoveException e) {
             return BadRequest(new
@@ -88,10 +117,11 @@ public class GameController : Controller {
     // 
     // POST: /Game/ChooseDragonToGain/
     [HttpPost]
-    public IActionResult ChooseDragonToGain(int player, int id) {
+    public async Task<IActionResult> ChooseDragonToGain(int player, int id) {
         try {
             ApiResponse response = GameRunner.mainGame.apiPlayerChooseDragonToGain(player, id);
             IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
             return output;
         } catch (IllegalMoveException e) {
             return BadRequest(new
@@ -104,10 +134,11 @@ public class GameController : Controller {
     // 
     // POST: /Game/ChooseCaveToGain/
     [HttpPost]
-    public IActionResult ChooseCaveToGain(int player, int id) {
+    public async Task<IActionResult> ChooseCaveToGain(int player, int id) {
         try {
             ApiResponse response = GameRunner.mainGame.apiPlayerChooseCaveToGain(player, id);
             IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
             return output;
         } catch (IllegalMoveException e) {
             return BadRequest(new
@@ -120,11 +151,12 @@ public class GameController : Controller {
     // 
     // POST: /Game/ChooseDragonToDiscard/
     [HttpPost]
-    public IActionResult ChooseDragonToDiscard(int player, int id) {
+    public async Task<IActionResult> ChooseDragonToDiscard(int player, int id) {
         try {
             Dragon d = new Dragon(id, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
             ApiResponse response = GameRunner.mainGame.apiPlayerChooseDragonToDiscard(player, d);
             IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
             return output;
         } catch (IllegalMoveException e) {
             return BadRequest(new
@@ -137,11 +169,12 @@ public class GameController : Controller {
     // 
     // POST: /Game/ChooseCaveToDiscard/
     [HttpPost]
-    public IActionResult ChooseCaveToDiscard(int player, int id) {
+    public async Task<IActionResult> ChooseCaveToDiscard(int player, int id) {
         try {
             Cave c = new Cave(id, WyrmAction.nothingAction());
             ApiResponse response = GameRunner.mainGame.apiPlayerChooseCaveToDiscard(player, c);
             IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
             return output;
         } catch (IllegalMoveException e) {
             return BadRequest(new
@@ -154,11 +187,12 @@ public class GameController : Controller {
     // 
     // POST: /Game/Excavate/
     [HttpPost]
-    public IActionResult Excavate(int player, int CaveID, int CavernID) {
+    public async Task<IActionResult> Excavate(int player, int CaveID, int CavernID) {
         try {
             Cave c = new Cave(CaveID, WyrmAction.nothingAction());
             ApiResponse response = GameRunner.mainGame.apiPlayerExcavates(player, c, CavernID);
             IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
             return output;
         } catch (IllegalMoveException e) {
             return BadRequest(new
@@ -171,10 +205,11 @@ public class GameController : Controller {
     // 
     // POST: /Game/Explore/
     [HttpPost]
-    public IActionResult Explore(int player, int CavernID) {
+    public async Task<IActionResult> Explore(int player, int CavernID) {
         try {
             ApiResponse response = GameRunner.mainGame.apiPlayerExplores(player, CavernID);
             IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
             return output;
         } catch (IllegalMoveException e) {
             return BadRequest(new
@@ -187,11 +222,12 @@ public class GameController : Controller {
     // 
     // POST: /Game/Entice/
     [HttpPost]
-    public IActionResult Entice(int player, int dragonID, int CavernID) {
+    public async Task<IActionResult> Entice(int player, int dragonID, int CavernID) {
         try {
             Dragon d = new Dragon(dragonID, "name", "sprite", 0, 0, 0, 0, 0, 0, 0, 0, 0, WyrmAction.nothingAction(), true, true, true);
             ApiResponse response = GameRunner.mainGame.apiPlayerEntices(player, d, CavernID);
             IActionResult output = serializeResponse(response);
+            await BroadcastGameUpdate(response);
             return output;
         } catch (IllegalMoveException e) {
             return BadRequest(new
@@ -218,6 +254,18 @@ public class GameController : Controller {
 
     // Helper Functions for serialization
 
+    private async Task BroadcastGameUpdate(ApiResponse resp)
+    {
+        var output = new
+        {
+            active_player = resp.getActivePlayer(),
+            game_stack_frame = serializeFrame(resp.getFrame()),
+            players = resp.getPlayers().Select(p => serializePlayer(p)),
+            board = serializeBoard(resp.getGameBoard())
+        };
+
+        await _hub.Clients.All.SendAsync("updateDisplay", output);
+    }
 
     private IActionResult serializeResponse(ApiResponse resp) {
         var output = new

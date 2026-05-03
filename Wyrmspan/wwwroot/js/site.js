@@ -5,6 +5,7 @@ var turnPlayerName = "";
 var currState = "";
 var gameData = null;
 var enticing = false;
+let playerId = null;
 
 var chooseOneModal = document.getElementById("chooseOneModal");
 var exploreBtn = document.getElementById("exploreBtn");
@@ -19,13 +20,12 @@ excavateBtn.onclick = handleExcavateBtn;
 enticeBtn.onclick = handleEnticeBtn;
 universalSkipBtn.onclick = callSkipEndpoint;
 
-setInterval(updateDisplay(), 1000);
 // When the user clicks on <span> (x), close the modal
 oneModalClose.onclick = function() {
-        chooseOneModal.style.display = "none";
+    chooseOneModal.style.display = "none";
 }
 twoModalClose.onclick = function() {
-        chooseTwoModal.style.display = "none";
+    chooseTwoModal.style.display = "none";
 }
 
 // When the user clicks anywhere outside of the modal, close it
@@ -43,6 +43,34 @@ window.onclick = function(event) {
 document.getElementById("rulesBtn").onclick = function () {
     window.open("/resources/rules.pdf", "_blank");
 };
+
+const savedPlayerId = localStorage.getItem("playerId");
+
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/displayHub", {accessTokenFactory: () => savedPlayerId})
+    .build();
+
+connection.on("updateDisplay", function (data) {
+    console.log("Recieved websocket push");
+    updateDisplay(data);
+});
+
+connection.on("assignPlayer", function (id) {
+    playerId = id;
+    console.log("You are Player:", playerId);
+    localStorage.setItem("playerId", id);
+    fetch("/Game/Ping", {
+        method: "POST"
+    });
+});
+
+connection.start()
+    .then(() => console.log("✅ SignalR connected"))
+    .catch(err => console.error("❌ SignalR error:", err));
+
+connection.onclose(() => {
+    console.warn("⚠️ SignalR disconnected");
+});
 
 function routeOneModalSubmit() {
 
@@ -81,6 +109,9 @@ function routeOneModalSubmit() {
     }
 
     chooseOneModal.style.display = "none";
+    fetch("/Game/Ping", {
+        method: "POST"
+    });
 }
 
 function routeTwoModalSubmit() {
@@ -99,12 +130,15 @@ function routeTwoModalSubmit() {
     }
 
     chooseTwoModal.style.display = "none";
+    fetch("/Game/Ping", {
+        method: "POST"
+    });
 }
 
 function callExploreEndpoint() {
     var selectedCavern = document.querySelector("#oneModalDynamicContent select").selectedIndex;
 
-    fetch("http://localhost:5012/Game/Explore?player=" + statePlayer + "&cavernID=" + selectedCavern, {
+    fetch("/Game/Explore?player=" + playerId + "&cavernID=" + selectedCavern, {
         method: "POST"
     })
     .then(response => response.text())
@@ -120,7 +154,7 @@ function callExploreEndpoint() {
 function callGainResourceEndpoint() {
     var selectedResource = document.querySelector("#oneModalDynamicContent select").value;
 
-    fetch("http://localhost:5012/Game/ChooseResourceToGain?player=" + statePlayer + "&resource=" + selectedResource, {
+    fetch("/Game/ChooseResourceToGain?player=" + playerId + "&resource=" + selectedResource, {
         method: "POST"
     })
     .then(response => response.text())
@@ -136,7 +170,7 @@ function callGainResourceEndpoint() {
 function callDiscardResourceEndpoint() {
     var selectedResource = document.querySelector("#oneModalDynamicContent select").value;
 
-    fetch("http://localhost:5012/Game/ChooseResourceToDiscard?player=" + statePlayer + "&resource=" + selectedResource, {
+    fetch("/Game/ChooseResourceToDiscard?player=" + playerId + "&resource=" + selectedResource, {
         method: "POST"
     })
     .then(response => response.text())
@@ -156,7 +190,7 @@ function callGainBenefitEndpoint(){
 
     if (type === "dragon") {
         console.log("dragon endpoint called");
-        fetch("http://localhost:5012/Game/ChooseDragonToGain?player=" + statePlayer + "&id=" + value, {
+        fetch("/Game/ChooseDragonToGain?player=" + playerId + "&id=" + value, {
         method: "POST"
         }).then(response => response.text()).then(data => {
         console.log(JSON.parse(data));
@@ -172,7 +206,7 @@ function callGainBenefitEndpoint(){
             }
         }
     } else if (type === "cave") {
-        fetch("http://localhost:5012/Game/ChooseCaveToGain?player=" + statePlayer + "&id=" + value, {
+        fetch("/Game/ChooseCaveToGain?player=" + playerId + "&id=" + value, {
         method: "POST"
     }).then(response => response.text()).then(data => {
         console.log(JSON.parse(data));
@@ -181,7 +215,7 @@ function callGainBenefitEndpoint(){
         console.error("Error:", error);
     });
     } else {
-        fetch("http://localhost:5012/Game/ChooseResourceToGain?player=" + statePlayer + "&resource=" + value, {
+        fetch("/Game/ChooseResourceToGain?player=" + playerId + "&resource=" + value, {
         method: "POST"
     }).then(response => response.text()).then(data => {
         console.log(JSON.parse(data));
@@ -199,7 +233,7 @@ function callDiscardBenefitEndpoint(){
 
     if (type === "dragon") {
         console.log("dragon endpoint called");
-        fetch("http://localhost:5012/Game/ChooseDragonToDiscard?player=" + statePlayer + "&id=" + value, {
+        fetch("/Game/ChooseDragonToDiscard?player=" + playerId + "&id=" + value, {
         method: "POST"
         }).then(response => response.text()).then(data => {
         console.log(JSON.parse(data));
@@ -215,7 +249,7 @@ function callDiscardBenefitEndpoint(){
             }
         }
     } else if (type === "cave") {
-        fetch("http://localhost:5012/Game/ChooseCaveToDiscard?player=" + statePlayer + "&id=" + value, {
+        fetch("/Game/ChooseCaveToDiscard?player=" + playerId + "&id=" + value, {
         method: "POST"
     }).then(response => response.text()).then(data => {
         console.log(JSON.parse(data));
@@ -224,7 +258,7 @@ function callDiscardBenefitEndpoint(){
         console.error("Error:", error);
     });
     } else {
-        fetch("http://localhost:5012/Game/ChooseResourceToDiscard?player=" + statePlayer + "&resource=" + value, {
+        fetch("/Game/ChooseResourceToDiscard?player=" + playerId + "&resource=" + value, {
         method: "POST"
     }).then(response => response.text()).then(data => {
         console.log(JSON.parse(data));
@@ -238,7 +272,7 @@ function callDiscardBenefitEndpoint(){
 function callGainDragonEndpoint() {
     var selectedDragon = document.querySelector("#oneModalDynamicContent select").value;
 
-    fetch("http://localhost:5012/Game/ChooseDragonToGain?player=" + statePlayer + "&id=" + selectedDragon, {
+    fetch("/Game/ChooseDragonToGain?player=" + playerId + "&id=" + selectedDragon, {
         method: "POST"
     })
     .then(response => response.text())
@@ -254,7 +288,7 @@ function callGainDragonEndpoint() {
 function callDiscardDragonEndpoint() {
     var selectedDragon = document.querySelector("#oneModalDynamicContent select").value;
 
-    fetch("http://localhost:5012/Game/ChooseDragonToDiscard?player=" + statePlayer + "&id=" + selectedDragon, {
+    fetch("/Game/ChooseDragonToDiscard?player=" + playerId + "&id=" + selectedDragon, {
         method: "POST"
     })
     .then(response => response.text())
@@ -268,7 +302,7 @@ function callDiscardDragonEndpoint() {
 }
 
 function callSkipEndpoint() {
-    fetch("http://localhost:5012/Game/PlayerSkip?player=" + statePlayer, {
+    fetch("/Game/PlayerSkip?player=" + playerId, {
         method: "POST"
     })
     .then(response => response.text())
@@ -284,7 +318,7 @@ function callSkipEndpoint() {
 function callGainCaveEndpoint() {
     var selectedCave = document.querySelector("#oneModalDynamicContent select").value;
 
-    fetch("http://localhost:5012/Game/ChooseCaveToGain?player=" + statePlayer + "&id=" + selectedCave, {
+    fetch("/Game/ChooseCaveToGain?player=" + playerId + "&id=" + selectedCave, {
         method: "POST"
     })
     .then(response => response.text())
@@ -301,7 +335,7 @@ function callExcavateEndpoint() {
     var selectedCave = document.querySelector("#twoModalDynamicContent select:nth-of-type(2)").value;
     var selectedCavern = document.querySelector("#twoModalDynamicContent select:nth-of-type(1)").value
 
-    fetch("http://localhost:5012/Game/Excavate?player=" + statePlayer + "&caveID=" + selectedCave + "&cavernID=" + selectedCavern, {
+    fetch("/Game/Excavate?player=" + playerId + "&caveID=" + selectedCave + "&cavernID=" + selectedCavern, {
         method: "POST"
     })
     .then(response => response.text())
@@ -318,7 +352,7 @@ function callEnticeEndpoint() {
     var selectedDragon = document.querySelector("#twoModalDynamicContent select:nth-of-type(2)").value;
     var selectedCavern = document.querySelector("#twoModalDynamicContent select:nth-of-type(1)").value
 
-    fetch("http://localhost:5012/Game/Entice?player=" + statePlayer + "&dragonID=" + selectedDragon + "&cavernID=" + selectedCavern, {
+    fetch("/Game/Entice?player=" + playerId + "&dragonID=" + selectedDragon + "&cavernID=" + selectedCavern, {
         method: "POST"
     })
     .then(response => response.text())
@@ -334,7 +368,7 @@ function callEnticeEndpoint() {
 function callDiscardCaveEndpoint() {
     var selectedCave = document.querySelector("#oneModalDynamicContent select").value;
 
-    fetch("http://localhost:5012/Game/ChooseCaveToDiscard?player=" + statePlayer + "&id=" + selectedCave, {
+    fetch("/Game/ChooseCaveToDiscard?player=" + playerId + "&id=" + selectedCave, {
         method: "POST"
     })
     .then(response => response.text())
@@ -924,6 +958,17 @@ function handleEnticeBtn() {
 }
 
 function postDisplayUpdates() {
+    const isMyTurn = Number(statePlayer) === Number(playerId);
+
+    exploreBtn.disabled = !isMyTurn;
+    excavateBtn.disabled = !isMyTurn;
+    enticeBtn.disabled = !isMyTurn;
+    universalSkipBtn.disabled = !isMyTurn;
+
+    if (!isMyTurn) {
+        return;
+    }
+
     switch(currState) {
         case "AWAIT_GET_RESOURCE":
             handleGainResource();
@@ -952,15 +997,16 @@ function postDisplayUpdates() {
         default:
             break;
     }
+    
 }
 
 function updateDisplay() {
-    fetch("http://localhost:5012/Game/GetBoard", {
+    fetch("/Game/GetBoard", {
         method: "GET"
     })
     .then(response => response.text())
     .then(data => {
-        console.log(JSON.parse(data));
+        // console.log(JSON.parse(data));
         displayBoardInfo(JSON.parse(data));
     })
     .catch(error => {
@@ -969,7 +1015,7 @@ function updateDisplay() {
 }
 
 function getData() {
-    fetch("http://localhost:5012/Game/GetBoard", {
+    fetch("/Game/GetBoard", {
         method: "GET"
     })
     .then(response => response.text())
@@ -1007,21 +1053,22 @@ function displayBoardInfo(data) {
     statePlayerName = data.players[statePlayer].name;
     turnPlayerName = data.players[turnPlayer].name;
     gameData = data;
-    document.getElementById("coinCounter").innerHTML = "Coins: " + data.players[statePlayer].resources.coins;
-    document.getElementById("meatCounter").innerHTML = "Meat: " + data.players[statePlayer].resources.meat;
-    document.getElementById("goldCounter").innerHTML = "Gold: " + data.players[statePlayer].resources.gold;
-    document.getElementById("amethystCounter").innerHTML = "Amethyst: " + data.players[statePlayer].resources.amethyst;
-    document.getElementById("milkCounter").innerHTML = "Milk: " + data.players[statePlayer].resources.milk;
-    document.getElementById("eggCounter").innerHTML = "Eggs: " + data.players[statePlayer].resources.eggs;
-    document.getElementById("reputationCounter").innerHTML = "Reputation: " + data.players[statePlayer].resources.reputation;
+    document.getElementById("coinCounter").innerHTML = "Coins: " + data.players[playerId].resources.coins;
+    document.getElementById("meatCounter").innerHTML = "Meat: " + data.players[playerId].resources.meat;
+    document.getElementById("goldCounter").innerHTML = "Gold: " + data.players[playerId].resources.gold;
+    document.getElementById("amethystCounter").innerHTML = "Amethyst: " + data.players[playerId].resources.amethyst;
+    document.getElementById("milkCounter").innerHTML = "Milk: " + data.players[playerId].resources.milk;
+    document.getElementById("eggCounter").innerHTML = "Eggs: " + data.players[playerId].resources.eggs;
+    document.getElementById("reputationCounter").innerHTML = "Reputation: " + data.players[playerId].resources.reputation;
     document.getElementById("playerIndicator").innerHTML = "Turn: " + data.players[turnPlayer].name;
     document.getElementById("playerIndicator2").innerHTML = "Acting: " + data.players[statePlayer].name;
+    document.getElementById("selfPlayerIndicator").innerHTML = "You Are: " + data.players[playerId].name;
 
     let dragonNames = document.getElementsByName("dragonName");
 
     for (let i = 0; i < dragonNames.length; i++) {
         try {
-            dragonNames[i].innerHTML = data.players[statePlayer].dragon_hand[i].name;
+            dragonNames[i].innerHTML = data.players[playerId].dragon_hand[i].name;
         } catch {
             dragonNames[i].innerHTML = "";
         }
@@ -1031,7 +1078,7 @@ function displayBoardInfo(data) {
 
     for (let i = 0; i < dragonDescs.length; i++) {
         try {
-            dragonDescs[i].innerHTML = data.players[statePlayer].dragon_hand[i].action.description;
+            dragonDescs[i].innerHTML = data.players[playerId].dragon_hand[i].action.description;
         } catch {
             dragonDescs[i].innerHTML = "";
         }
@@ -1041,7 +1088,7 @@ function displayBoardInfo(data) {
 
     for (let i = 0; i < dragonCosts.length; i++) {
         try {
-            dragonCosts[i].innerHTML = getCostEmoji(data.players[statePlayer].dragon_hand[i]);
+            dragonCosts[i].innerHTML = getCostEmoji(data.players[playerId].dragon_hand[i]);
         } catch {
             dragonCosts[i].innerHTML = "";
         }
@@ -1051,7 +1098,7 @@ function displayBoardInfo(data) {
 
     for (let i = 0; i < caveDescs.length; i++) {
         try {
-            caveDescs[i].innerHTML = data.players[statePlayer].cave_hand[i].action.description;
+            caveDescs[i].innerHTML = data.players[playerId].cave_hand[i].action.description;
         } catch {
             caveDescs[i].innerHTML = "";
         }
@@ -1081,7 +1128,7 @@ function displayBoardInfo(data) {
 
     for (let i = 0; i < shopDragonCosts.length; i++) {
         try {
-            shopDragonCosts[i].innerHTML = getCostEmoji(data.players[statePlayer].dragon_hand[i]);
+            shopDragonCosts[i].innerHTML = getCostEmoji(data.board.dragonShop[i]);
         } catch {
             shopDragonCosts[i].innerHTML = "";
         }
@@ -1104,7 +1151,7 @@ function displayBoardInfo(data) {
             try {
                 document.getElementById("cavern-slot-"+cavern+"-"+column).innerHTML = `
                     <img src = "/images/caveCorner.png" alt= "Cave"/>
-                    <div class="cavern-slot-text">${data.players[statePlayer].mat.caverns[cavern].caves[column].action.description}</div>
+                    <div class="cavern-slot-text">${data.players[playerId].mat.caverns[cavern].caves[column].action.description}</div>
                 `;
             } catch {
                 document.getElementById("cavern-slot-"+cavern+"-"+column).innerHTML = "";
@@ -1118,8 +1165,8 @@ function displayBoardInfo(data) {
             try {
                 document.getElementById("cavern-slot-"+cavern+"-"+column).innerHTML = `
                     <img src = "/images/marbelDragon.png" alt = "Marble Dragon" />
-                    <div class="card-text"><p>${data.players[statePlayer].mat.caverns[cavern].dragons[column].name}<br>
-                    ${data.players[statePlayer].mat.caverns[cavern].dragons[column].action.description}</p></div>
+                    <div class="card-text"><p>${data.players[playerId].mat.caverns[cavern].dragons[column].name}<br>
+                    ${data.players[playerId].mat.caverns[cavern].dragons[column].action.description}</p></div>
                 `;
             } catch {
                 //do nothing

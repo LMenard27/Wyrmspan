@@ -1,6 +1,6 @@
 ﻿@using MvcMovie.Controllers
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Wyrmspan";
 }
 
 <div class="text-center">
@@ -26,6 +26,7 @@
 
     <div class="resource", id="playerIndicator">Turn:</div>
     <div class="resource", id="playerIndicator2">Acting:</div>
+    <div class="resource", id="selfPlayerIndicator">You Are:</div>
 </div>
 
 <!-- 🗺️ BOARD -->
@@ -161,4 +162,4 @@
     </div>
 </div>
 
-<body onload="updateDisplay()"> </body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
