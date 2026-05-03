@@ -15,13 +15,13 @@ public class Cavern {
     public Cavern(WyrmAction capstone) {
         this.exploreCount = 0;
         this.caves = new Cave[CAVES_PER_CAVERN];
-        this.caveIndex = 1;
+        this.caveIndex = 0;
         this.dragons = new Dragon[CAVES_PER_CAVERN];
         this.dragonIndex = 0;
         this.capstoneReward = capstone;
         this.totEggCapacity = 0;
 
-        this.addCave(new Cave(-1, WyrmAction.nothingAction()));
+        this.addCave(new Cave(-1, new WyrmAction(-1, 0, 0, 0, 0, 0, false, false, "Starter Cave")));
     }
 
     /*
@@ -34,15 +34,24 @@ public class Cavern {
     Return:
     a WyrmAction[] containing the WyrmAction of the placed Cave, and if the fourth Cave is placed, the WyrmAction of this Cavern as well.
     */
-    public WyrmAction[] addCave(Cave c) {
+    public WyrmAction[] addCave(Cave c)
+    {
         this.caves[this.caveIndex] = c;
         this.caveIndex++;
 
-        if (this.caveIndex >= 4) {
-            return [c.getAction(), this.capstoneReward];
+        if (this.caveIndex >= 4)
+        {
+            return new WyrmAction[]
+            {
+                c.getAction(),
+                this.capstoneReward
+            };
         }
 
-        return [c.getAction()];
+        return new WyrmAction[]
+        {
+            c.getAction()
+        };
     }
 
     /*
@@ -59,7 +68,10 @@ public class Cavern {
         this.dragons[this.dragonIndex] = d;
         this.dragonIndex++;
 
-        return [d.getAction()];
+        return new WyrmAction[]
+        {
+            d.getAction()
+        };
     }
 
     /*

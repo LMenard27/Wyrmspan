@@ -4,6 +4,9 @@ public class GameStackFrame {
     Dictionary<Resources, bool> resourcesAllowed;
     String description;
 
+    bool canChooseDragon;
+    
+    bool canChooseCave;
 
     public GameStackFrame() {
         this.state = States.NOP;
@@ -18,7 +21,9 @@ public class GameStackFrame {
         this.resourcesAllowed[Resources.Coins] = false;
         this.resourcesAllowed[Resources.Eggs] = false;
         this.resourcesAllowed[Resources.Reputation] = false;
-
+        this.resourcesAllowed[Resources.Reputation] = false;
+        this.canChooseDragon = false;
+        this.canChooseCave = false;
     }
 
     public GameStackFrame(States s) {
@@ -34,6 +39,8 @@ public class GameStackFrame {
         this.resourcesAllowed[Resources.Coins] = false;
         this.resourcesAllowed[Resources.Eggs] = false;
         this.resourcesAllowed[Resources.Reputation] = false;
+        this.canChooseDragon = false;
+        this.canChooseCave = false;
     }
 
     public GameStackFrame(States s, int p) {
@@ -49,6 +56,8 @@ public class GameStackFrame {
         this.resourcesAllowed[Resources.Coins] = false;
         this.resourcesAllowed[Resources.Eggs] = false;
         this.resourcesAllowed[Resources.Reputation] = false;
+        this.canChooseDragon = false;
+        this.canChooseCave = false;
     }
 
     public void setState(States s) {
@@ -77,5 +86,20 @@ public class GameStackFrame {
 
     public string getDesc() {
         return this.description;
+    }
+
+    public bool getCanChooseDragon() {
+        return this.canChooseDragon;
+    }
+
+    public void setCanChooseDragon(bool b) {
+        this.canChooseDragon = b;
+    }
+    public bool getCanChooseCave() {
+        return this.canChooseCave;
+    }
+
+    public void setCanChooseCave(bool b) {
+        this.canChooseCave = b;
     }
 }

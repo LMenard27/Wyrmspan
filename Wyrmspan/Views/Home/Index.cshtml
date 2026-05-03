@@ -3,153 +3,7 @@
     ViewData["Title"] = "Home Page";
 }
 
-<style>
-    body {
-        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
-    }
-
-    .top-bar {
-        display: flex;
-        gap: 20px;
-        padding: 10px;
-        background: rgb(214, 240, 240);
-        border: 2px solid #382316;
-        border-radius: 6px;
-        box-shadow: 1px 1px 2px rgb(174, 178, 178);
-    }
-
-    .resource {
-        padding: 5px 10px;
-        background: white;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        box-shadow: inset 1px 1px 2px rgb(174, 178, 178);
-    }
-
-    .board {
-        height: 500px;
-        border: 3px solid #382316;
-        border-radius: 6px;
-        margin: 20px 0;
-        position: relative;
-        background-color: rgb(199, 239, 239);
-        background:
-            linear-gradient(rgba(199,239,239,0.6),rgba(199,239,239,0.6)),
-            url('/images/map.PNG');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center;
-    }
-    .shop {
-        height: 385px;
-        border: 2px solid #382316;
-        border-radius: 6px;
-        margin: 20px 20px;
-        padding: 10px;
-        position: relative;
-        background-color: rgb(199, 239, 239);
-        background:
-            linear-gradient(rgba(199,239,239,0.6),rgba(199,239,239,0.6)),
-            url('/images/map.PNG');
-        background-size: cover;
-        background-repeat: no-repeat;
-        background-position: center;
-        right: -13.5%;
-    }
-
-    .cavern-slot {
-        width: 250px;
-        height: 150px;
-        background: rgba(121, 166, 166, 0.75);
-        border: 2px solid rgb(0, 54, 54);
-        border-radius: 6px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .cavern-card {
-        width: 100%;
-        height: 100%;
-    }
-    .cavern-container {
-        position: absolute;
-        top: 10px;
-        left: 10%;
-        transform: translateX((-25%));
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-    }
-    .cards-container{
-         display: flex;
-         flex-direction: row;
-    }
-    .cavern-row {
-        display: flex;
-        gap: 10px;
-    }
-
-    .action-button {
-        margin: 5px;
-        background: teal;
-        color: white;
-        border: 2px solid rgb(0, 54, 54);
-        cursor: pointer;
-    }
-
-    .hand {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        align-items: center;
-    }
-
-    .card-row {
-        display: flex;
-        gap: 10px;
-    }
-
-    .card-slot {
-        width: 100px;
-        height: 140px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgb(238, 233, 224);
-        border-radius: 6px;
-    }
-
-    .card {
-        border: 1px solid rgb(186, 195, 195);
-        background: white;
-        box-shadow: 1px 1px 2px rgb(174, 178, 178);
-        padding: 2px;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 10px;
-    }
-    .card img {
-        max-height: 75%;
-        width: auto;
-        object-fit: contain;
-    }
-    .card-text {
-        font-size: 12px;
-        font-weight: bold;
-        margin-top: 2px;
-        color: #333;
-    }
-</style>
-
 <div class="text-center">
-    <h1 class="display-4">Wyrmspan</h1>
-    <button id="initBtn">Initialize Game Board</button>
 
 <!-- 🔝 RESOURCE BAR -->
 <div class="top-bar">
@@ -159,30 +13,45 @@
     <div class="resource", id="amethystCounter">Amethyst:</div>
     <div class="resource", id="milkCounter">Milk:</div>
     <div class="resource", id="eggCounter">Eggs:</div>
-    <div class= "resource", id="reputationCounter">Reputation:</div>
+    <div class="resource", id="reputationCounter">Reputation:</div>
 
     <!-- Example action buttons -->
-    <form method="post" asp-action="Excavate">
-        <button class="action-button">Excavate</button>
-    </form>
+    <button class="action-button" id="excavateBtn">Excavate</button>
 
-    <form method="post" asp-action="Explore">
-        <button class="action-button">Explore</button>
-    </form>
+    <button class="action-button" id="exploreBtn">Explore</button>
 
-    <form method="post" asp-action="Entice">
-        <button class="action-button">Entice</button>
-    </form>
+    <button class="action-button" id="enticeBtn">Entice</button>
+
+    <button class="cancel-button" id="skipBtn">Skip</button>
+
+    <div class="resource", id="playerIndicator">Turn:</div>
+    <div class="resource", id="playerIndicator2">Acting:</div>
 </div>
 
 <!-- 🗺️ BOARD -->
 <div class="board">
     <div class ="cavern-container">
         @for (int i =0; i<3; i++){
+            @if(i==0){
+                <div class="cavern-text" >Crimson Cavern</div>
+            } else if (i == 1){
+                <div class="cavern-text" >Golden Grotto</div>
+            } else {
+                <div class="cavern-text">Amethyst Abyss</div>
+            }
             <div class ="cavern-row">
             @for (int j=0; j < 4; j++){
-                <div class="cavern-slot">
-                </div>
+                @if(i==0){
+                    <div class="cavern-slot", id="@($"cavern-slot-{i}-{j}")", style = "background-color: rgba(255, 92, 150, 0.65)">
+                    </div>
+                } else if (i == 1){
+                    <div class="cavern-slot", id="@($"cavern-slot-{i}-{j}")", style = "background-color: rgba(255, 205, 130, 0.65)">
+                    </div>
+                } else {
+                    <div class="cavern-slot", id="@($"cavern-slot-{i}-{j}")", style = "background-color: rgba(190, 120, 255, 0.65)">
+                    </div>
+                }
+                
             }
             </div>
         }
@@ -201,8 +70,9 @@
                 {
                     <div class="card-slot">
                         <div class="card">
-                            <img src = "default.png" alt = "Red, yellow, green Quetzacoatl Dragon" />
+                            <div class="cost-text", name="dragonCost">Free</div>
                             <div class="card-text", name="dragonName">QueztalCoatl</div>
+                            <img src = "/images/quetzacoatlColour.png" alt = "Red, yellow, green Quetzacoatl Dragon" />
                             <div class="card-text", name="dragonDesc">Description</div>
                         </div>
                     </div>
@@ -218,7 +88,7 @@
                 {
                     <div class="card-slot">
                         <div class="card">
-                            <img src = "default.png" alt= "Cave"/>
+                            <img src = "/images/caveCentral.png" alt= "Cave"/>
                             <div class="card-text", name="caveDesc">Description</div>
                         </div>
                     </div>
@@ -235,8 +105,9 @@
                     {
                         <div class="card-slot">
                             <div class="card">
-                                <img src = "/images/quetzacoatlColour.PNG" alt = "Red, yellow, green Quetzacoatl Dragon" />
+                                <div class="cost-text", name="shopDragonCost">Free</div>
                                 <div class="card-text", name="shopDragonName">QueztalCoatl</div>
+                                <img src = "/images/blueDragon.png" alt = "Blue Eastern Dragon" />
                                 <div class="card-text", name="shopDragonDesc">Description</div>
                             </div>
                         </div>
@@ -247,19 +118,10 @@
                     @for (int i = 0; i < 3; i++)
                     {
                         <div class="card-slot">
-                            @if (i < 3)
-                            {
-                                <div class="card">
-                                    @if(i==0){
-                                        <img src = "/images/caveCentral.PNG" alt= "Cave"/>
-                                    }
-                                    @if(i==1){
-                                        <img src = "/images/caveCorner.PNG" alt="Cave"/>
-                                    }
-                                    <div class = "card-text">Cave</div>
-                                    <div class="card-text">Description</div>
-                                </div>
-                            }
+                            <div class="card">
+                                <img src = "/images/caveCorner.png" alt= "Cave"/>
+                                <div class="card-text", name="shopCaveDesc">Description</div>
+                            </div>
                         </div>
                     }
                 </div>
@@ -269,81 +131,34 @@
     
 </div>
 
-<script>
-        var currPlayer = 0;
+<button id="rulesBtn">How To Play</button>
 
-        document.getElementById("initBtn").addEventListener("click", function () {
-            fetch("http://localhost:5012/Game/GetBoard", {
-                method: "GET"
-            })
-            .then(response => response.text())
-            .then(data => {
-                //console.log(data);
-                displayBoardInfo(JSON.parse(data));
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
-        });
+<div id=chooseOneModal class="modal">
+    <div class="modal-content">
+        <p id="oneModalDynamicText">No Description Given</p>
 
-        function displayBoardInfo(data) {
-            document.getElementById("coinCounter").innerHTML = "Coins: " + data.players[currPlayer].resources.coins;
-            document.getElementById("meatCounter").innerHTML = "Meat: " + data.players[currPlayer].resources.meat;
-            document.getElementById("goldCounter").innerHTML = "Gold: " + data.players[currPlayer].resources.gold;
-            document.getElementById("amethystCounter").innerHTML = "Amethyst: " + data.players[currPlayer].resources.amethyst;
-            document.getElementById("milkCounter").innerHTML = "Milk: " + data.players[currPlayer].resources.milk;
-            document.getElementById("eggCounter").innerHTML = "Eggs: " + data.players[currPlayer].resources.eggs;
-            document.getElementById("reputationCounter").innerHTML = "Reputation: " + data.players[currPlayer].resources.reputation;
+        <div id="oneModalDynamicContent"></div>
 
-            let dragonNames = document.getElementsByName("dragonName");
+        <div class="modal-actions">
+            <button class="cancel-button" id="oneModalClose">Close</button>
+            <button class="skip-button" id="oneModalSkip">Skip</button>
+            <button class="action-button" id="oneModalSubmit">Submit</button>
+        </div>
+    </div>
+</div>
 
-            for (let i = 0; i < dragonNames.length; i++) {
-                try {
-                    dragonNames[i].innerHTML = data.players[currPlayer].dragon_hand[i].name;
-                } catch {
-                    dragonNames[i].innerHTML = "";
-                }
-            }
+<div id=chooseTwoModal class="modal">
+    <div class="modal-content">
+        <p id="twoModalDynamicText">No Description Given</p>
 
-            let dragonDescs = document.getElementsByName("dragonDesc");
+        <div id="twoModalDynamicContent"></div>
 
-            for (let i = 0; i < dragonDescs.length; i++) {
-                try {
-                    dragonDescs[i].innerHTML = data.players[currPlayer].dragon_hand[i].action.description;
-                } catch {
-                    dragonDescs[i].innerHTML = "";
-                }
-            }
+        <div class="modal-actions">
+            <button class="cancel-button" id="twoModalClose">Close</button>
+            <button class="skip-button" id="twoModalSkip">Skip</button>
+            <button class="action-button" id="twoModalSubmit">Submit</button>
+        </div>
+    </div>
+</div>
 
-            let caveDescs = document.getElementsByName("caveDesc");
-
-            for (let i = 0; i < caveDescs.length; i++) {
-                try {
-                    caveDescs[i].innerHTML = data.players[currPlayer].cave_hand[i].action.description;
-                } catch {
-                    caveDescs[i].innerHTML = "";
-                }
-            }
-
-            let shopDragonNames = document.getElementsByName("shopDragonName");
-
-            for (let i = 0; i < shopDragonNames.length; i++) {
-                try {
-                    shopDragonNames[i].innerHTML = data.board.dragonShop[i].name;
-                } catch {
-                    shopDragonNames[i].innerHTML = "";
-                }
-            }
-
-            let shopDragonDescs = document.getElementsByName("shopDragonDesc");
-
-            for (let i = 0; i < shopDragonDescs.length; i++) {
-                try {
-                    shopDragonDescs[i].innerHTML = data.board.dragonShop[i].action.description;
-                } catch {
-                    shopDragonDescs[i].innerHTML = "";
-                }
-            }
-
-        }
-    </script>
+<body onload="updateDisplay()"> </body>

@@ -25,7 +25,7 @@ public class Player {
         resources.Add(Resources.Amethyst, 0);
         resources.Add(Resources.Gold, 0);
         resources.Add(Resources.Milk, 0);
-        resources.Add(Resources.Eggs, 0);
+        resources.Add(Resources.Eggs, 2);
         resources.Add(Resources.Reputation, 0);
 
         this.mat = new Mat([WyrmAction.nothingAction(), WyrmAction.nothingAction(), WyrmAction.nothingAction()]);
