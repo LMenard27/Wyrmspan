@@ -1,0 +1,32 @@
+<h2>Login</h2>
+
+<form method="post" asp-action="Login" style="max-width: 400px;">
+
+    <div class="mb-2">
+        <input name="username"
+               maxlength="30"
+               placeholder="Username"
+               class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <input name="password"
+               type="password"
+               placeholder="Password"
+               class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">
+        Login
+    </button>
+
+</form>
+
+<hr />
+
+<p>
+    Don’t have an account?
+    <a asp-controller="Account" asp-action="Register" class="btn btn-link">
+        Create an account
+    </a>
+</p>

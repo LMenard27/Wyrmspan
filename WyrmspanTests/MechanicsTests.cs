@@ -2,6 +2,9 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authentication;
 
+/*
+These tests require that a database be created and connected to before running the tests.
+*/
 public class MechanicsTests
 {
     [Fact]

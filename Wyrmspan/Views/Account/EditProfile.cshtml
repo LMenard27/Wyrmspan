@@ -1,0 +1,31 @@
+@model EditProfileViewModel
+
+<h2>Edit Profile</h2>
+
+<form method="post" style="max-width: 400px;">
+
+    <div class="mb-2">
+        <label class="form-label">Username</label>
+        <input asp-for="Username"
+               maxlength="30"
+               class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">New Password (leave blank to keep current)</label>
+        <input asp-for="Password"
+               type="password"
+               class="form-control" />
+    </div>
+
+    <div class="mb-2">
+        <label class="form-label">Profile Picture URL</label>
+        <input asp-for="Pfp"
+               class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary w-100">
+        Save Changes
+    </button>
+
+</form>
