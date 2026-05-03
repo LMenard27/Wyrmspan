@@ -44,8 +44,10 @@ document.getElementById("rulesBtn").onclick = function () {
     window.open("/resources/rules.pdf", "_blank");
 };
 
+const savedPlayerId = localStorage.getItem("playerId");
+
 const connection = new signalR.HubConnectionBuilder()
-    .withUrl("/displayHub")
+    .withUrl("/displayHub", {accessTokenFactory: () => savedPlayerId})
     .build();
 
 connection.on("updateDisplay", function (data) {
@@ -56,6 +58,7 @@ connection.on("updateDisplay", function (data) {
 connection.on("assignPlayer", function (id) {
     playerId = id;
     console.log("You are Player:", playerId);
+    localStorage.setItem("playerId", id);
     fetch("/Game/Ping", {
         method: "POST"
     });

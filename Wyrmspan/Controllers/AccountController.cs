@@ -36,8 +36,12 @@ public class AccountController : Controller
             return View(model);
         }
 
+        user.Played++;
+        _db.SaveChanges();
+
         var claims = new List<Claim>
         {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
             new Claim(ClaimTypes.Name, user.Username),
             new Claim("Pfp", user.Pfp ?? "/images/default.png")
         };
@@ -95,38 +99,59 @@ public class AccountController : Controller
 
     [HttpPost]
     public async Task<IActionResult> EditProfile(EditProfileViewModel model)
+    {
+        var user = _db.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
+
+        if (user == null)
+            return RedirectToAction("Login");
+
+        // Update DB
+        user.Username = model.Username;
+
+        if (!string.IsNullOrWhiteSpace(model.Password))
         {
-            var user = _db.Users.FirstOrDefault(u => u.Username == User.Identity.Name);
-
-            if (user == null)
-                return RedirectToAction("Login");
-
-            // Update DB
-            user.Username = model.Username;
-
-            if (!string.IsNullOrWhiteSpace(model.Password))
-            {
-                user.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
-            }
-
-            user.Pfp = string.IsNullOrWhiteSpace(model.Pfp)
-                ? user.Pfp
-                : model.Pfp;
-
-            _db.SaveChanges();
-
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim("Pfp", user.Pfp ?? "/images/default.png")
-            };
-
-            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-            var principal = new ClaimsPrincipal(identity);
-
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
-
-            return RedirectToAction("Index", "Home");
+            user.Password = BCrypt.Net.BCrypt.HashPassword(model.Password);
         }
+
+        user.Pfp = string.IsNullOrWhiteSpace(model.Pfp)
+            ? user.Pfp
+            : model.Pfp;
+
+        _db.SaveChanges();
+
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.Username),
+            new Claim("Pfp", user.Pfp ?? "/images/default.png")
+        };
+
+        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        var principal = new ClaimsPrincipal(identity);
+
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+        return RedirectToAction("Index", "Home");
+    }
+
+    [HttpGet]
+    public IActionResult Profile()
+    {
+        var username = User.Identity.Name;
+
+        var user = _db.Users.FirstOrDefault(u => u.Username == username);
+
+        if (user == null)
+            return RedirectToAction("Login");
+
+        var model = new ViewProfileViewModel
+        {
+            Username = user.Username,
+            Pfp = user.Pfp ?? "/images/default.png",
+            Played = user.Played,
+        };
+
+        return View(model);
+    }
 }
