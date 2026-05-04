@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("WyrmspanTests")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+91d965df0100ed55a4817bcfb89fd508e5aabd7e")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d9dcc9f20d53a23ab7b38d30a56e621df54db96c")]
 [assembly: System.Reflection.AssemblyProductAttribute("WyrmspanTests")]
 [assembly: System.Reflection.AssemblyTitleAttribute("WyrmspanTests")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
