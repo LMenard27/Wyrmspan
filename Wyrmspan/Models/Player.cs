@@ -1,4 +1,3 @@
-using System.Collections;
 
 public class Player {
     // CONSTANTS
@@ -13,6 +12,12 @@ public class Player {
     int points;
     int paymentSkipped;
 
+    /*
+    Constructor for the Player class, initializes all the fields to their default values.
+
+    Parameters:
+    name: the name of the player, used for identification and display purposes.
+    */
     public Player(String name) {
         this.name = name;
         this.dragonHand = new List<Dragon>();
@@ -47,6 +52,12 @@ public class Player {
         this.paymentSkipped = s;
     }
 
+    /*
+    Increments the value of payment skipped by int s
+
+    Parameters:
+    s: the number of payments skipped to add to the total payment skipped
+    */
     public void addSkipped(int s) {
         this.paymentSkipped += s;
     }
@@ -95,6 +106,10 @@ public class Player {
 
     /*
     Increments the value of a resource, one resource at a time
+
+    Parameters:
+    r: the resource to increment
+    count: the amount to increment the resource by
     */
     public void addResource(Resources r, int count) {
         this.resources[r] += count;
@@ -102,6 +117,12 @@ public class Player {
 
     /*
     Calls the explore function of a specified cavern and passes on its return
+
+    Parameters:
+    c: the index of the cavern to explore
+
+    Returns:
+    An array of WyrmActions that result from exploring the specified cavern
     */
     public WyrmAction[] explore(int c) {
         return this.mat.explore(c);
@@ -109,6 +130,13 @@ public class Player {
 
     /*
     Calls the addDragon function of a specified cavern and passes on its return
+
+    Parameters:
+    c: the index of the cavern to add the dragon to
+    d: the dragon to add
+
+    Returns:
+    An array of WyrmActions that result from adding the dragon to the specified cavern
     */
     public WyrmAction[] addDragon(int c, Dragon d) {
         return this.mat.addDragon(c, d);
@@ -116,6 +144,13 @@ public class Player {
 
     /*
     Calls the addCave function of a specified cavern and passes on its return
+
+    Parameters:
+    c: the index of the cavern to add the cave to
+    cv: the cave to add
+
+    Returns:
+    An array of WyrmActions that result from adding the cave to the specified cavern
     */
     public WyrmAction[] addCave(int c, Cave cv) {
         return this.mat.addCave(c, cv);
@@ -123,6 +158,9 @@ public class Player {
 
     /*
     Removes a specific dragon by id
+
+    Parameters:
+    id: the id of the dragon to remove from the hand
     */
     public void discardDragon(int id) {
         this.dragonHand.RemoveAll(x => x.getId() == id);
@@ -130,6 +168,9 @@ public class Player {
 
     /*
     Removes a specific cave by id
+
+    Parameters:
+    id: the id of the cave to remove from the hand
     */
     public void discardCave(int id) {
         this.caveHand.RemoveAll(x => x.getId() == id);
@@ -137,6 +178,9 @@ public class Player {
 
     /*
     Adds a dragon to the hand
+
+    Parameters:
+    d: the dragon to add to the hand
     */
     public void addDragonToHand(Dragon d) {
         this.dragonHand.Add(d);
@@ -144,6 +188,9 @@ public class Player {
 
     /*
     Adds a cave to the hand
+
+    Parameters:
+    c: the cave to add to the hand
     */
     public void addCaveToHand(Cave c) {
         this.caveHand.Add(c);
