@@ -13,6 +13,10 @@ public class DisplayHub : Hub
 
     private static object _lock = new();
 
+    /*
+    Handles a new player connectiong using an SignalR websocket. Assigns them a seat at the table 0-3
+    and stores that user's unique ID to ensure their spot at the table is saved
+    */
     public override async Task OnConnectedAsync()
     {
         var httpContext = Context.GetHttpContext();
@@ -35,7 +39,7 @@ public class DisplayHub : Hub
             {
                 if (_availableSlots.Count == 0)
                 {
-                    assignedPlayerId = -1; // indicate spectator / full game
+                    assignedPlayerId = -1; // renders player unable to play
                 }
                 else
                 {
@@ -54,6 +58,9 @@ public class DisplayHub : Hub
         await base.OnConnectedAsync();
     }
 
+    /*
+    Called when a player disconnects from teh SignalR websocket. Frees up their spot at the table, allowing a new player to join in their stead.
+    */
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         if (_connections.TryRemove(Context.ConnectionId, out string? clientId))

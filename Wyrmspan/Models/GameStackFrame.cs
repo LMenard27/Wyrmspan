@@ -8,6 +8,11 @@ public class GameStackFrame {
     
     bool canChooseCave;
 
+    /*
+    Creates a new GSF with all default information
+    Returns:
+    itself
+    */
     public GameStackFrame() {
         this.state = States.NOP;
         this.player = -1;
@@ -26,6 +31,11 @@ public class GameStackFrame {
         this.canChooseCave = false;
     }
 
+    /*
+    Creates a new GSF with a provided state
+    Returns:
+    itself
+    */
     public GameStackFrame(States s) {
         this.state = s;
         this.player = -1;
@@ -43,6 +53,11 @@ public class GameStackFrame {
         this.canChooseCave = false;
     }
 
+    /*
+    Creates a new GSF with a provided state and player
+    Returns:
+    itself
+    */
     public GameStackFrame(States s, int p) {
         this.state = s;
         this.player = p;

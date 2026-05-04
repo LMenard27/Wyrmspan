@@ -31,8 +31,7 @@ public class GameRunner {
         
         this.gameStack = new Stack<GameStackFrame>();
 
-        // TODO: un-hardcode this
-        // four rounds of gameplay
+        // four rounds of gameplay with 6 turns per player, rotating starting player
         ////////////////////////////////////////////////////////////////////////
         this.gameStack.Push(new GameStackFrame(States.END_GAME));              /////
         this.gameStack.Push(new GameStackFrame(States.END_ROUND));             /////
@@ -96,7 +95,8 @@ public class GameRunner {
     }
 
     /*
-    Removes one frame from the game stack and updates the current state and state player variables
+    Removes one frame from the game stack and updates the current state and state player variables.
+    Checks if it is a new player's turn or not time to discard resources and resets skip counter.
     */
     private void clearFrame() {
         this.gameStack.Pop();
@@ -146,7 +146,7 @@ public class GameRunner {
     }
 
     /*
-    Testing function
+    Pass-through function
     */
     public void refreshShop() {
         this.board.refreshShop();
@@ -160,7 +160,7 @@ public class GameRunner {
     }
 
     /*
-    Pushes a new frame onto the stack, for testing purposes
+    Pushes a new frame onto the stack, for minute prescision and testing purposes
     */
     public void pushGameStackFrame(GameStackFrame s) {
         this.gameStack.Push(s);
@@ -169,14 +169,30 @@ public class GameRunner {
     }
 
     /*
-    Returns the board
+    All api- functions share this documentation in common:
+    These functions validate move legality of a requested action. They check the player has enough resources, if the card requested exists
+    in the hand or shop, if the cave has enough space left, if the price of exploring and excavating is affordable, and if it is currently legal to perform
+    that action. For example, gaining a resource can only be done when it is time to gain a resource. These functions also check if it is the turn of the
+    player that requested to perform an action. This ensures all errors are caught in this layer.
+
+    Each function then pops the top frame of the game stack to rotate active player and move to the next stage of the game, as well as checking for end-
+    of-game conditions
+    */
+
+    /*
+    Returns the current state of the game as an ApiResponce object
     */
     public ApiResponse apiGetBoard() {
         return new ApiResponse(this.board, this.players, this.TurnPlayer, this.gameStack.Peek());
     }
 
     /*
-    Called when a player chooses a resource to gain from the bank
+    Called when a player chooses a resource to gain from the bank. Reource is added to their storage. Fails if there is not enough egg storage
+    Parameters:
+    p: the index of the player to operate on
+    r: the resource that the player wants
+    Returns:
+    the new state of the game as an ApiResponce object
     */
     public ApiResponse apiPlayerChooseResourceToGain(int p, Resources r) {
         // Check legality of move
@@ -210,7 +226,11 @@ public class GameRunner {
     }
 
     /*
-    Called when a player chooses to skip their action
+    Called when a player chooses to skip their action. Marks them as skipped until the round ends.
+    Parameters:
+    p: the index of the player to operate on
+    Returns:
+    the new state of the game as an ApiResponce object
     */
     public ApiResponse apiPlayerSkipped(int p) {
         // Check legality of move
@@ -236,6 +256,9 @@ public class GameRunner {
         return new ApiResponse(this.board, this.players, this.TurnPlayer, this.gameStack.Peek());
     }
 
+    /*
+    Rotates the active player to the next one on the stack
+    */
     private void rotatePlayer() {
         if (this.gameStack.Peek().getState() == States.AWAIT_PLAYER_ACTION) {
             this.TurnPlayer = this.gameStack.Peek().getPlayer();
@@ -243,7 +266,9 @@ public class GameRunner {
     }
 
     /*
-    Called when a NOP is hit in the stack
+    Called when a NOP is hit in the stack. Does nothing except remove the NOP frame.
+    Returns:
+    the new state of the game as an ApiResponce Object
     */
     public ApiResponse apiMillStack() {
         this.clearFrame();
@@ -256,7 +281,12 @@ public class GameRunner {
     }
 
     /*
-    Called when a player chooses a resource to discard from their storage
+    Called when a player chooses a resource to discard from their storage. Removes that resource from their storage
+    Parameters:
+    p: the index of the player to operate on
+    r: the resource the player chooses to discard
+    Returns:
+    the new state of the game as an ApiResponce object
     */
     public ApiResponse apiPlayerChooseResourceToDiscard(int p, Resources r) {
         // Check legality of move
@@ -287,7 +317,12 @@ public class GameRunner {
     }
 
     /*
-    Called when a player draws a dragon from the shop
+    Called when a player draws a dragon from the shop. Removes that dragon from the shop, adds it to the player's hand, then draws a new Dragon into the shop
+    Parameters:
+    p: the index of the player to operate on
+    dragonIndex: the unique ID of the dragon the player wishes to gain
+    Returns:
+    the new state of the game as an ApiResponse object
     */
     public ApiResponse apiPlayerChooseDragonToGain(int p, int dragonIndex) {
         // Check legality of move
@@ -318,9 +353,6 @@ public class GameRunner {
             temp += 1;
         }
         if (!isAvailable) {
-            // This has a security vulnerability: a bad actor may poll every card in existence to see if it is not at the top,
-            // allowing for a bad actor to, by process of elimination, deduce which card is at the top.
-            // This vulnerability shall be patched by invoking the Ostrich Algorithm.
             throw new IllegalMoveException("That dragon is not in the shop or at the top of the deck!");
         }
 
@@ -352,7 +384,12 @@ public class GameRunner {
     }
 
     /*
-    Called when a player draws a cave from the shop
+    Called when a player draws a cave from the shop. Removes that cave from the shop and adds it to the player's hand, then draws a new Cave into the shop
+    Parameters:
+    p: the index of the player to operate on
+    r: the unique ID of the cave the player wishes to gain
+    Returns:
+    the new state of the game as an ApiResponse object
     */
     public ApiResponse apiPlayerChooseCaveToGain(int p, int caveIndex) {
         // Check legality of move
@@ -379,9 +416,6 @@ public class GameRunner {
             }
         }
         if (!isAvailable) {
-            // This has a security vulnerability: a bad actor may poll every card in existence to see if it is not at the top,
-            // allowing for a bad actor to, by process of elimination, deduce which card is at the top.
-            // This vulnerability shall be patched by invoking the Ostrich Algorithm.
             throw new IllegalMoveException("That cave is not in the shop or at the top of the deck!");
         }
 
@@ -399,7 +433,12 @@ public class GameRunner {
     }
 
     /*
-    Called when a player discards a dragon from their hand
+    Called when a player discards a dragon from their hand. Removes the dragon from their hand, if it exists
+    Parameters:
+    p: the index of the player to operate on
+    dragonIndex: a dummy dragon containing the unique ID of the dragon the player wishes to discard
+    Returns:
+    the new state of the game as an ApiResponse object
     */
     public ApiResponse apiPlayerChooseDragonToDiscard(int p, Dragon dragonIndex) {
         // Check legality of move
@@ -440,7 +479,12 @@ public class GameRunner {
     }
 
     /*
-    Called when a player discards a cave from their hand
+    Called when a player discards a cave from their hand. Removes the cave from their hand, if the cave exists
+    Parameters:
+    p: the index of the player to operate on
+    caveIndex: a dummy cave containing the unique ID of the cave the player wishes to discard
+    Returns:
+    the new state of the game as an ApiResponse object
     */
     public ApiResponse apiPlayerChooseCaveToDiscard(int p, Cave caveIndex) {
         // Check legality of move
@@ -480,6 +524,9 @@ public class GameRunner {
         return new ApiResponse(this.board, this.players, this.TurnPlayer, this.gameStack.Peek());
     }
 
+    /*
+    Handles the round end by refreshing the shop and marking all players as not passed
+    */
     private void handleRoundEnd() {
         this.board.refreshShop();
         this.gameStack.Pop();
@@ -487,7 +534,14 @@ public class GameRunner {
     }
 
     /*
-    Called when a player excavates a cave
+    Called when a player excavates a cave. Removes the cave from the player's hand and adds it to the declared cavern, as long as the cavern has remaining spots open.
+    Enqueues the frames for the action of the cave.
+    Parameters:
+    p: the index of the player to operate on
+    caveIndex: a dummy cave containing the unique ID of the cave the player wishes to excavate
+    cavern: the index of the cavern the player wishes to excavate
+    Retruns:
+    the new state of the game as an ApiResponse object
     */
     public ApiResponse apiPlayerExcavates(int p, Cave caveIndex, int cavern) {
         // Check legality of move
@@ -561,7 +615,11 @@ public class GameRunner {
     }
 
     /*
-    Takes an array of WyrmActions and adds frames to the stack to represent the action
+    Takes an array of WyrmActions and adds frames to the stack to represent the action. First adds benefits gained, then resources lost for the active player,
+    then adds the same for opponents. Since it is a LIFO stack, the events are resolved in reverse order.
+    Parameters:
+    action: the WyrmAction to encode into stack frames
+    player: the index of the player to operate on
     */
     private void addToStack(WyrmAction action, int player) {
         for (int i = 0; i < action.maxUses; i++) {
@@ -700,7 +758,7 @@ public class GameRunner {
 
 
     /*
-    Called when a player explores a cave
+    Called when a player explores a cavern. Enqueues the relevant dragon abilities that are activated on explore.
     */
     public ApiResponse apiPlayerExplores(int p, int cavern) {
         // Check legality of move
@@ -764,7 +822,14 @@ public class GameRunner {
     }
 
     /*
-    Called when a player entices a dragon
+    Called when a player entices a dragon. Removes the dragon from the player's hand and adds it to the cavern. Fails if no such dragon exists
+    or if there are not enouch caves to house dragons in the declared cavern.
+    Parameters:
+    p: the index of the player to operate on
+    dragonIndex: a dummy dragon that contains the uniqye ID of the dragon the player wishes to entice
+    cavern: the index of the cavern in which to entice
+    Returns:
+    the new state of the game as an Api Response object
     */
     public ApiResponse apiPlayerEntices(int p, Dragon dragonIndex, int cavern) {
         // Check legality of move
@@ -828,12 +893,15 @@ public class GameRunner {
     }
 
     /*
-    Handle the end of game
+    Handle the end of game. Calculates score of players by summing dragon victory points, one VP for every coin, one VP for every egg,
+    one VP for every four resources, and one VP for every three reputation. Assigns the score to the player objects.
+    Returns:
+    the new state of the game as an ApiResponse object
     */
     private ApiResponse handleGameEnd() {
         foreach (Player p in this.players) {
             int score = 0;
-            score += 3 * (p.getResources()[Resources.Reputation] / 6); // temporary 3 points every time around
+            score += 3 * (p.getResources()[Resources.Reputation] / 6);
 
             foreach (Cavern c in p.getMat().getCaverns()) {
                 foreach (Dragon d in c.getDragons()) {
