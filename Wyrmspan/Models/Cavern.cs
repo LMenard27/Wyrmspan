@@ -105,7 +105,7 @@ public class Cavern {
     }
 
     /*
-    Calculates the total egg capacity of all dragons within
+    Calculates the total egg capacity of all dragons within and sets a member variable to it
     */
     private void calculateCapacity() {
         this.totEggCapacity = 0;

@@ -171,7 +171,7 @@ public class Dragon: IComparable<Dragon> {
     }
 
     /*
-    Custom comparer
+    Custom comparer, compares by unique ID
     */
     public int CompareTo(Dragon? other) {
         if (other == null) {

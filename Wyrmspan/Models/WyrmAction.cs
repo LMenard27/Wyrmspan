@@ -19,12 +19,21 @@ public class WyrmAction: IComparable<WyrmAction> {
     public int numReward { get; set; }
     public string description { get; set; }
 
+    // Static action that does nothing, has no resources, no players, and no description
     static WyrmAction NOTHING_ACTION = new WyrmAction(-1, 0, 0, 0, 0, 0, false, false, "Do-Nothing action");
 
+    /*
+    Returns a static action that does nothing
+    */
     public static WyrmAction nothingAction() {
         return NOTHING_ACTION;
     }
 
+    /*
+    Creates a WyrmAction object with all provided information
+    Returns:
+    itself
+    */
     public WyrmAction(int id, int activator, int maxUses, int oppUses, int gains, int losses, bool payChoice, bool gainChoice, String desc) {
         this.Id = id;
         this.activator = activator;
@@ -41,6 +50,10 @@ public class WyrmAction: IComparable<WyrmAction> {
 
     /*
     Converts a base 10 number into whether each resource can be gained. Optionally, pass in true to do losses instead.
+    The place values are hot-coded to different resources and the value in each place are hot-coded such that 1 == True and everything else is false
+    Returns:
+    a Dictionary<string, bool> with the string representations of all the resources and a boolean representation of whether the resource is present in this
+    action or not
     */
     public Dictionary<string, bool> serializeResources(bool doLosses) {
         int workingInt = this.gains;
@@ -87,7 +100,7 @@ public class WyrmAction: IComparable<WyrmAction> {
     }
 
     /*
-    Converts a base 10 number into how many of each resource can be gained. Optionally, pass in true to do losses instead.
+    Helper function for serializeResources, pass-through function
     */
     public Dictionary<string, bool> serializeResources() {
         return this.serializeResources(false);
@@ -142,6 +155,9 @@ public class WyrmAction: IComparable<WyrmAction> {
         return this.gainChoice;
     }
 
+    /*
+    Custom comparer that compares based on each WyrmAction's unique ID
+    */
     public int CompareTo(WyrmAction? other)
     {
         if (other == null) {

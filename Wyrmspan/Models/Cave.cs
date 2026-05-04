@@ -18,6 +18,9 @@ public class Cave: IComparable<Cave> {
         return new Cave(this.Id, this.Action);
     }
 
+    /*
+    Custom comparer, compares on the unique ID of caves
+    */
     public int CompareTo(Cave? other) {
         if (other == null) {
             return 0;
