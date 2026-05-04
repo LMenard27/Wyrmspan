@@ -21,14 +21,22 @@ public class GameController : Controller {
         _hub = hub;
     }
     
-    // 
+    /*
+    Handles  API calls related to the game state. 
+    Return:
+    The serialized game state after API call.
+    */
     // GET: /Game/
     [HttpGet]
     public async Task<IActionResult> Index() {
         return Ok(JsonSerializer.Serialize(DataCache.Actions.Select(serializeAction)));
     }
 
-    // 
+    /*
+    Retreaves the current Game Board
+    Return:
+    The serialized game board or an error if the move was illegal.
+    */
     // GET: /Game/GetBoard/
     [HttpGet]
     public async Task<IActionResult> GetBoard() {
@@ -44,7 +52,11 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Retreaves game board and broadcasts the update.
+    Return:
+    Serialized game board or an error if the move was illegal.
+    */
     // GET: /Game/GetBoard/Ping
     [HttpPost]
     public async Task<IActionResult> Ping() {
@@ -61,7 +73,14 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Calls the API for a player choosing a resources to gain and broadcasts the update.
+    Parameters:
+    player: the player choosing the resource's index.
+    resource: the chosen resource as a string.
+    Return:
+    Serialized api response or an error if the move was illegal.
+    */ 
     // POST: /Game/ChooseResourceToGain/
     [HttpPost]
     public async Task<IActionResult> ChooseResourceToGain(int player, string resource) {
@@ -79,7 +98,13 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Calls the API for a player skipping and broadcasts the update.
+    Parameters:
+    player: the skipping player's index.
+    Return:
+    Serialized api response or an error if the move was illegal.
+    */ 
     // POST: /Game/PlayerSkip/
     [HttpPost]
     public async Task<IActionResult> PlayerSkip(int player) {
@@ -96,7 +121,14 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Calls the API for a player choosing a resources to discard and broadcasts the update.
+    Parameters:
+    player: the player choosing the resource's index.
+    resource: the chosen resource as a string.
+    Return:
+    Serialized api response or an error if the move was illegal.
+    */ 
     // POST: /Game/ChooseResourceToDiscard/
     [HttpPost]
     public async Task<IActionResult> ChooseResourceToDiscard(int player, string resource) {
@@ -114,7 +146,14 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Calls the API for a player choosing a Dragon to gain and broadcasts the update.
+    Parameters:
+    player: the player choosing the Dragon's index.
+    id: the chosen Dragon's id.
+    Return:
+    Serialized api response or an error if the move was illegal.
+    */ 
     // POST: /Game/ChooseDragonToGain/
     [HttpPost]
     public async Task<IActionResult> ChooseDragonToGain(int player, int id) {
@@ -131,7 +170,14 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Calls the API for a player choosing a Cave to gain and broadcasts the update.
+    Parameters:
+    player: the player choosing the Cave's index.
+    id: the chosen Cave's id.
+    Return:
+    Serialized api response or an error if the move was illegal.
+    */ 
     // POST: /Game/ChooseCaveToGain/
     [HttpPost]
     public async Task<IActionResult> ChooseCaveToGain(int player, int id) {
@@ -148,7 +194,14 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Calls the API for a player choosing a Dragon to discard and broadcasts the update.
+    Parameters:
+    player: the player choosing the Dragon's index.
+    id: the chosen Dragon's id.
+    Return:
+    Serialized api response or an error if the move was illegal.
+    */ 
     // POST: /Game/ChooseDragonToDiscard/
     [HttpPost]
     public async Task<IActionResult> ChooseDragonToDiscard(int player, int id) {
@@ -166,7 +219,14 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Calls the API for a player choosing a Cave to discard and broadcasts the update.
+    Parameters:
+    player: the player choosing the Cave's index.
+    id: the chosen Cave's id.
+    Return:
+    Serialized api response or an error if the move was illegal.
+    */ 
     // POST: /Game/ChooseCaveToDiscard/
     [HttpPost]
     public async Task<IActionResult> ChooseCaveToDiscard(int player, int id) {
@@ -184,7 +244,15 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Calls the API for a player excavating and broadcasts the update.
+    Parameters:
+    player: the excavating player's index.
+    CaveID: the id of the Cave being excavated.
+    CavernID: the index of the Cavern the cave is being excavated into.
+    Return:
+    Serialized api response or an error if the move was illegal.
+    */ 
     // POST: /Game/Excavate/
     [HttpPost]
     public async Task<IActionResult> Excavate(int player, int CaveID, int CavernID) {
@@ -202,7 +270,14 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Calls the API for a player exploring and broadcasts the update.
+    Parameters:
+    player: the exploring player's index.
+    CavernID: the index of the Cavern being explored.
+    Return:
+    Serialized api response or an error if the move was illegal.
+    */ 
     // POST: /Game/Explore/
     [HttpPost]
     public async Task<IActionResult> Explore(int player, int CavernID) {
@@ -219,7 +294,15 @@ public class GameController : Controller {
         }
     }
 
-    // 
+    /*
+    Calls the API for a player enticing and broadcasts the update.
+    Parameters:
+    player: the enticing player's index.
+    dragonID: the id of the Dragon being enticed.
+    CavernID: the index of the Cavern the Dragon is being enticed into.
+    Return:
+    Serialized api response or an error if the move was illegal.
+    */ 
     // POST: /Game/Entice/
     [HttpPost]
     public async Task<IActionResult> Entice(int player, int dragonID, int CavernID) {
@@ -242,18 +325,13 @@ public class GameController : Controller {
 
 
 
-
-
-
-
-
-
-
-
-
-
     // Helper Functions for serialization
 
+    /*
+    Broadcasts a game update.
+    Parameters:
+    resp: the API response to broadcast.
+    */
     private async Task BroadcastGameUpdate(ApiResponse resp)
     {
         var output = new
@@ -267,6 +345,13 @@ public class GameController : Controller {
         await _hub.Clients.All.SendAsync("updateDisplay", output);
     }
 
+    /*
+    Serializes an API response into a JSON object to send to the frontend.
+    Parameters:
+    resp: the API response to serialize.
+    Return:
+    a JSON object representing the API response.
+    */
     private IActionResult serializeResponse(ApiResponse resp) {
         var output = new
         {
@@ -281,6 +366,13 @@ public class GameController : Controller {
         return Ok(json);
     }
 
+    /*
+    Serializes a Wyrmaction into a JSON object to send to the frontend.
+    Parameters:
+    wa: the WyrmAction to serialize.
+    Return:
+    a JSON object representing the WyrmAction.
+    */
     public object serializeAction(WyrmAction wa) {
         var output = new
         {
@@ -323,6 +415,13 @@ public class GameController : Controller {
         return output;
     }
 
+    /*
+    Serializes a dragon into a JSON object to send to the frontend.
+    Parameters:
+    d: the Dragon to serialize.
+    Return:
+    a JSON object representing the Dragon.
+    */
     public object serializeDragon(Dragon d) {
         var output = new
         {
@@ -347,6 +446,13 @@ public class GameController : Controller {
         return output;
     }
 
+    /*
+    Serializes a cave into a JSON object to send to the frontend.
+    Parameters:
+    c: the Cave to serialize.
+    Return:
+    a JSON object representing the Cave.
+    */
     public object serializeCave(Cave c) {
         var output = new
         {
@@ -357,6 +463,13 @@ public class GameController : Controller {
         return output;
     }
 
+    /*
+    Serializes a GameStackFrame into a JSON object to send to the frontend.
+    Parameters:
+    gsf: the GameStackFrame to serialize.
+    Return:
+    a JSON object representing the GameStackFrame.
+    */
     public object serializeFrame(GameStackFrame gsf) {
         var output = new
         {
@@ -381,6 +494,13 @@ public class GameController : Controller {
         return output;
     }
 
+    /*
+    Serializes a player into a JSON object to send to the frontend.
+    Parameters:
+    p: the player to serialize.
+    Return:
+    a JSON object representing the player.
+    */
     public object serializePlayer(Player p) {
         var output = new
         {
@@ -411,6 +531,13 @@ public class GameController : Controller {
         return output;
     }
 
+    /*
+    Serializes a GameBoard into a JSON object to send to the frontend.
+    Parameters:
+    board: the GameBoard to serialize.
+    Return:
+    a JSON object representing the GameBoard.
+    */
     public object serializeBoard(GameBoard board) {
         var output = new
         {

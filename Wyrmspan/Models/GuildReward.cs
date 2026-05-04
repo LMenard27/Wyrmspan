@@ -3,6 +3,9 @@ public class GuildReward {
     int uses;
     WyrmAction action;
 
+    /*
+    Constructor for GuildReward
+    */
     public GuildReward(int id, int uses, WyrmAction action) {
         this.id = id;
         this.uses = uses;
