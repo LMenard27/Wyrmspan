@@ -72,6 +72,12 @@ connection.onclose(() => {
     console.warn("⚠️ SignalR disconnected");
 });
 
+/*
+whenever an action occurs other than the player enticing or excavating,
+the current state is changed to be the necessary AWAIT in order to 
+resolve that action. This function is then called, which calls the 
+necessary endpoint so that the backend can deal with the action
+*/
 function routeOneModalSubmit() {
 
     switch(currState) {
@@ -114,6 +120,12 @@ function routeOneModalSubmit() {
     });
 }
 
+/*
+whenever the player excavates or entices, this is called, which then
+calls the correct endpoint so that the backend can update necessary
+acion to deal with the player's action. First checks that the game
+is on the correct state to avoid bad actor calling said functions
+*/
 function routeTwoModalSubmit() {
 
     switch(currState) {
@@ -135,6 +147,11 @@ function routeTwoModalSubmit() {
     });
 }
 
+/*
+called after the player chooses which cavern to explore, then
+calls the backend to update player information for what they gained 
+and spent when exploring. 
+*/
 function callExploreEndpoint() {
     var selectedCavern = document.querySelector("#oneModalDynamicContent select").selectedIndex;
 
@@ -151,6 +168,10 @@ function callExploreEndpoint() {
     });
 }
 
+/*
+called after player chooses which resource to gain and adds that 
+resource to their inventory
+*/
 function callGainResourceEndpoint() {
     var selectedResource = document.querySelector("#oneModalDynamicContent select").value;
 
@@ -167,6 +188,11 @@ function callGainResourceEndpoint() {
     });
 }
 
+/*
+called after player chooses which resource to discard or a resource
+is discarded as a cost of an action automatically, removing that
+resource from the player's inventory
+*/
 function callDiscardResourceEndpoint() {
     var selectedResource = document.querySelector("#oneModalDynamicContent select").value;
 
@@ -183,6 +209,12 @@ function callDiscardResourceEndpoint() {
     });
 }
 
+/*
+called after a player chooses which benefit to gain, then 
+has the backend deal with the result of that gain, which could
+simply involve giving them a resource or giving them a dragon
+from the shop and replacing that dragon in the shop. 
+*/
 function callGainBenefitEndpoint(){
     var selectedBenefit = document.querySelector("#oneModalDynamicContent select").value;
     var [type, value] = selectedBenefit.split(":");
@@ -226,6 +258,11 @@ function callGainBenefitEndpoint(){
     }
 }
 
+/*
+calls backend function in order to update player information when a benefit is discarded,
+placing the dragon in the correct player's hand, removing it from the shop, and
+replacing the slot in the shop with a new dragon from the deck
+*/
 function callDiscardBenefitEndpoint(){
     var selectedBenefit = document.querySelector("#oneModalDynamicContent select").value;
     var [type, value] = selectedBenefit.split(":");
@@ -269,6 +306,11 @@ function callDiscardBenefitEndpoint(){
     }
 }
 
+/*
+calls backend function in order to update player information when a dragon is gained,
+placing the dragon in the correct player's hand, removing it from the shop, and
+replacing the slot in the shop with a new dragon from the deck
+*/
 function callGainDragonEndpoint() {
     var selectedDragon = document.querySelector("#oneModalDynamicContent select").value;
 
@@ -285,6 +327,10 @@ function callGainDragonEndpoint() {
     });
 }
 
+/*
+calls backend function in order to update player information when a dragon is discarded
+for any reason other than enticing 
+*/
 function callDiscardDragonEndpoint() {
     var selectedDragon = document.querySelector("#oneModalDynamicContent select").value;
 
@@ -301,6 +347,12 @@ function callDiscardDragonEndpoint() {
     });
 }
 
+/*
+calls backend function in order to update game information whenever a player skips,
+which either occurs when a card had an optional reward or a player skips their turn. 
+If the ladder occurred, that player will not have another action for the rest
+of the round 
+*/
 function callSkipEndpoint() {
     fetch("/Game/PlayerSkip?player=" + playerId, {
         method: "POST"
@@ -315,6 +367,11 @@ function callSkipEndpoint() {
     });
 }
 
+/*
+calls backend function in order to update player information when a cave is gained,
+placing the cave in the correct player's hand, removing it from the shop, and
+replacing the slot in the shop with a new cave from the deck
+*/
 function callGainCaveEndpoint() {
     var selectedCave = document.querySelector("#oneModalDynamicContent select").value;
 
@@ -331,6 +388,11 @@ function callGainCaveEndpoint() {
     });
 }
 
+
+/*
+calls backend function in order to update player information when a cave is excavated,
+placing the corresponding cave on the mat and discarding it from the player's hand
+*/
 function callExcavateEndpoint() {
     var selectedCave = document.querySelector("#twoModalDynamicContent select:nth-of-type(2)").value;
     var selectedCavern = document.querySelector("#twoModalDynamicContent select:nth-of-type(1)").value
@@ -348,6 +410,10 @@ function callExcavateEndpoint() {
     });
 }
 
+/*
+calls backend function in order to update player information when a dragon is enticed,
+placing the dragon on player's mat and discarding it from their hadn
+*/
 function callEnticeEndpoint() {
     var selectedDragon = document.querySelector("#twoModalDynamicContent select:nth-of-type(2)").value;
     var selectedCavern = document.querySelector("#twoModalDynamicContent select:nth-of-type(1)").value
@@ -364,7 +430,10 @@ function callEnticeEndpoint() {
         console.error("Error:", error);
     });
 }
-
+/*
+calls backend function in order to update player information when a cave is discarded
+for a reason other than excavating 
+*/
 function callDiscardCaveEndpoint() {
     var selectedCave = document.querySelector("#oneModalDynamicContent select").value;
 
@@ -381,152 +450,11 @@ function callDiscardCaveEndpoint() {
     });
 }
 
-function handleDiscardCave() {
-    chooseOneModal.style.display = "block";
-    var oneModalSubmit = document.getElementById("oneModalSubmit");
-    oneModalSubmit.onclick = routeOneModalSubmit;
-
-    var skipBtn = document.getElementById("oneModalSkip");
-    skipBtn.disabled = false;
-    skipBtn.onclick = callSkipEndpoint;
-    var cancelBtn = document.getElementById("oneModalClose");
-    cancelBtn.disabled = true;
-
-    var text = document.getElementById("oneModalDynamicText");
-
-    text.innerHTML = `
-    <b>${statePlayerName}:</b>
-    <b>Select a cave to discard</b>`;
-
-    var container = document.getElementById("oneModalDynamicContent");
-
-    // Clear previous content
-    container.innerHTML = "";
-
-    // Create dropdown
-    var dropdown = document.createElement("select");
-
-    gameData.players[statePlayer].cave_hand.forEach(cave => {
-        var option = document.createElement("option");
-
-        option.value = cave.id;      // useful for later lookup
-        option.textContent = cave.action.description;
-
-        dropdown.appendChild(option);
-    });
-
-    container.appendChild(dropdown);
-}
-
-function handleGainCave() {
-    chooseOneModal.style.display = "block";
-    var oneModalSubmit = document.getElementById("oneModalSubmit");
-    oneModalSubmit.onclick = routeOneModalSubmit;
-
-    var skipBtn = document.getElementById("oneModalSkip");
-    skipBtn.disabled = true;
-    var cancelBtn = document.getElementById("oneModalClose");
-    cancelBtn.disabled = true;
-
-    var text = document.getElementById("oneModalDynamicText");
-
-    text.innerHTML = `
-    <b>${statePlayerName}:</b>
-    <b>Select a cave to gain!</b>`;
-
-    var container = document.getElementById("oneModalDynamicContent");
-
-    // Clear previous content
-    container.innerHTML = "";
-
-    // Create dropdown
-    var dropdown = document.createElement("select");
-
-    gameData.board.caveShop.forEach(cave => {
-        var option = document.createElement("option");
-
-        option.value = cave.id;      // useful for later lookup
-        option.textContent = cave.action.description;
-
-        dropdown.appendChild(option);
-    });
-
-    container.appendChild(dropdown);
-}
-
-function handleDiscardDragon() {
-    chooseOneModal.style.display = "block";
-    var oneModalSubmit = document.getElementById("oneModalSubmit");
-    oneModalSubmit.onclick = routeOneModalSubmit;
-
-    var skipBtn = document.getElementById("oneModalSkip");
-    skipBtn.disabled = false;
-    skipBtn.onclick = callSkipEndpoint;
-    var cancelBtn = document.getElementById("oneModalClose");
-    cancelBtn.disabled = true;
-
-    var text = document.getElementById("oneModalDynamicText");
-
-    text.innerHTML = `
-    <b>${statePlayerName}:</b>
-    <b>Select a dragon to discard</b>`;
-
-    var container = document.getElementById("oneModalDynamicContent");
-
-    // Clear previous content
-    container.innerHTML = "";
-
-    // Create dropdown
-    var dropdown = document.createElement("select");
-
-    gameData.players[statePlayer].dragon_hand.forEach(dragon => {
-        var option = document.createElement("option");
-
-        option.value = dragon.id;      // useful for later lookup
-        option.textContent = dragon.name;
-
-        dropdown.appendChild(option);
-    });
-
-    container.appendChild(dropdown);
-}
-
-function handleGainDragon() {
-    chooseOneModal.style.display = "block";
-    var oneModalSubmit = document.getElementById("oneModalSubmit");
-    oneModalSubmit.onclick = routeOneModalSubmit;
-
-    var skipBtn = document.getElementById("oneModalSkip");
-    skipBtn.disabled = true;
-    var cancelBtn = document.getElementById("oneModalClose");
-    cancelBtn.disabled = true;
-
-    var text = document.getElementById("oneModalDynamicText");
-
-    text.innerHTML = `
-    <b>${statePlayerName}:</b>
-    <b>Select a dragon to gain!</b>`;
-
-    var container = document.getElementById("oneModalDynamicContent");
-
-    // Clear previous content
-    container.innerHTML = "";
-
-    // Create dropdown
-    var dropdown = document.createElement("select");
-
-    gameData.board.dragonShop.forEach(dragon => {
-        var option = document.createElement("option");
-
-        option.value = dragon.id;      // useful for later lookup
-        option.textContent = dragon.name;
-
-        dropdown.appendChild(option);
-    });
-
-    container.appendChild(dropdown);
-}
-
+/*
+this is called when a player is forced to discard something, most
+often as a cost to an action, and the only possible choice is one 
+of the basic resources.
+*/
 function handleDiscardResource() {
     chooseOneModal.style.display = "block";
     var oneModalSubmit = document.getElementById("oneModalSubmit");
@@ -593,6 +521,12 @@ function handleDiscardResource() {
     container.appendChild(dropdown);
 }
 
+/*
+whenever a player gains some benefit (resource, dragon, or cave) that is not just 
+one of the basic resources, this function is called to present them with all possible choices.
+If they may choose a dragon, all dragons from the shop will be added to the modal, and likewise
+with caves. 
+*/
 function handleGainBenefit() {
     console.log("benefit gained");
     chooseOneModal.style.display = "block";
@@ -676,6 +610,14 @@ function handleGainBenefit() {
     container.appendChild(dropdown);
 }
 
+/*
+when a player is forced to discard something that is not just some resource, 
+this is called to present them a choice of what to discard. They will be presented
+with each benefit they could be allowed to discard, which could be any resource, dragon,
+or cave card. If a player has 0 of a resource they will be allowed to select it but if
+they select to discard a resource they have 0 of, they will be prompted with the choice
+again
+*/
 function handleDiscardBenefit() {
     console.log("benefit gained");
     chooseOneModal.style.display = "block";
@@ -745,6 +687,12 @@ function handleDiscardBenefit() {
     container.appendChild(dropdown);
 }
 
+/*
+whenever a player gains some kind of resource or is allowed to choose some resource to gain,
+this function is called so that they can choose which resource to gain. The player is only 
+allowed to select resources that they are allowed to gain from their action, so in the event
+that the action rewarded them a particular resource such as meat, meat will be the only option
+*/
 function handleGainResource() {
     chooseOneModal.style.display = "block";
     var oneModalSubmit = document.getElementById("oneModalSubmit");
@@ -810,6 +758,10 @@ function handleGainResource() {
     container.appendChild(dropdown);
 }
 
+/*
+when the player presses the explore button in order to get rewards from their caves, 
+this function is called in order to let the player choose which cavern to explore
+*/
 function handleExploreBtn() {
     if (currState != "AWAIT_PLAYER_ACTION") {
         postDisplayUpdates();
@@ -851,6 +803,10 @@ function handleExploreBtn() {
     container.appendChild(dropdown);
 }
 
+/*
+when the player presses excavate in order to create a cave, this function is called 
+in order to give them a modal to choose which cave to create
+*/
 function handleExcavateBtn() {
     if (currState != "AWAIT_PLAYER_ACTION") {
         postDisplayUpdates();
@@ -904,6 +860,10 @@ function handleExcavateBtn() {
     container.appendChild(dropdown2);
 }
 
+/*
+when the player presses entice in order to summon a dragon, this function is called 
+in order to give them a modal to choose which dragon to summon
+*/
 function handleEnticeBtn() {
     if (currState != "AWAIT_PLAYER_ACTION") {
         postDisplayUpdates();
@@ -957,6 +917,11 @@ function handleEnticeBtn() {
     container.appendChild(dropdown2);
 }
 
+/*
+when a game action occurs, some AWAIT is added to the stack to be resolved, 
+this function is then called and calls a necessary handle function in order to 
+resolve the action the player took
+*/
 function postDisplayUpdates() {
     const isMyTurn = Number(statePlayer) === Number(playerId);
 
@@ -999,7 +964,9 @@ function postDisplayUpdates() {
     }
     
 }
-
+/*
+function that can be called in order to update the viewer on the information of the board
+*/
 function updateDisplay() {
     fetch("/Game/GetBoard", {
         method: "GET"
@@ -1014,6 +981,9 @@ function updateDisplay() {
     });
 }
 
+/*
+gets the information about the board from the backend
+*/
 function getData() {
     fetch("/Game/GetBoard", {
         method: "GET"
@@ -1028,6 +998,9 @@ function getData() {
     });
 }
 
+/*
+adds emojis to the dragon card sprites in order to represent the cost of the dragon
+*/
 function getCostEmoji(dragon) {
     let result = "";
 
@@ -1046,6 +1019,10 @@ function getCostEmoji(dragon) {
     return result || "Free";
 }
 
+/* 
+function that displays all of the information on the website other than modal popups
+data is a variable that essentially contains all of the information that is manipulated and set up in the backend
+*/
 function displayBoardInfo(data) {
     statePlayer = data.game_stack_frame.state_player;
     currState = data.game_stack_frame.state;
